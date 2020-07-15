@@ -4,16 +4,18 @@
 \alias{predictCN}
 \title{Predict copy number from Ct value using one or more standard curves.}
 \usage{
-predictCN(calib_df, ct_df)
+predictCN(calib_df, ct_df, ...)
 }
 \arguments{
 \item{calib_df}{A \code{\link{data.frame}} object containing calibration curve data.}
 
-\item{ct_df}{A data.frame object containing Ct value data.}
+\item{ct_df}{A \code{\link{data.frame}} object containing Ct value data.}
+
+\item{...}{Placeholder for further arguments that might be needed by future implementations.}
 }
 \value{
 A \code{\link{data.frame}} object containing original data in \code{ct_df} with back transformed
-    CN predictions and associated standard errors.
+    copy number predictions (\code{CN_back}) and associated standard errors (\code{CN_back_se}).
 }
 \description{
 Converts Ct value (or Cq value) to copy number (CN) using one
@@ -30,13 +32,22 @@ The \code{calib_df} data.frame object contains data from at least one qPCR calib
     The \code{ct_df} data.frame object usually contains qPCR Cq (Ct) values from sample data. The data.frame must
     contain the headers \code{calib_curve} and \code{Ct.value}. The \code{calib_curve} column must contain
     at least one unique calibration curve identifier corresponding to those in \code{calib_df}. Any identifiers
-    found in \code{ct_df} but not in \code{calib_df} will be ignored. The \code{Ct.value} should contain the Cq (Ct)
-    values. Any additional columns in the data.frame will remain unchanged and be included in the returned object.
+    found in \code{ct_df} but not in \code{calib_df} will be ignored and a \code{warning} displayed. The
+    \code{Ct.value} should contain the Cq (Ct) values. Any additional columns in the data.frame will remain
+    unchanged and be included in the returned object.
 
     Non-detections in either the \code{calib_df} or \code{ct_df} data.frames should be represented as \code{NA}.
+
+    Copy number is predicted from Cq (Ct) values by fitting a linear model (\code{\link{lm}}) to data from each
+    calibration curve and then using the \code{\link{inverse.predict}} function from the \code{\link{chemCal-package}}
+    package.
 }
 \examples{
 \dontrun{
 predictCN(calib_df = curve_data, ct_df = field_data)
 }
+}
+\references{
+Massart, L.M, Vandenginste, B.G.M., Buydens, L.M.C., De Jong, S., Lewi, P.J., Smeyers-Verbeke, J. (1997)
+     Handbook of Chemometrics and Qualimetrics: Part A, p. 200.
 }
