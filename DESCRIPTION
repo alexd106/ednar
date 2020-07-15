@@ -9,3 +9,5 @@ Description: Provides functions for qPCR targeted eDNA
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/alexd106/ednar
+BugReports: https://github.com/alexd106/ednar/issues
