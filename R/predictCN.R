@@ -12,17 +12,17 @@ library(chemCal)
 #'     contain column names 'calib_curve' and 'Ct.value'.Other columns will remain unchanged.
 #'
 #' @return A \code{\link{data.frame}} object containing CN predictions
+#' 
 #' @export
 #'
 #' @examples
 predictCN <- function(calib_df, ct_df){
 	# check correct arguments supplied
-	stopifnot(!missing(calib_df) || class(calib_df == "character"))
-	stopifnot(!missing(ct_df) || class(ct_df == "character"))
-	
-	# load data
-	calib <- read.table(calib_df, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
-	dataf <- read.table(ct_df, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+	stopifnot(!missing(calib_df) || class(calib_df == "data.frame"))
+	stopifnot(!missing(ct_df) || class(ct_df == "data.frame"))
+
+	calib <- calib_df
+	dataf <- ct_df
   calib$Target <- as.character(calib$Target)
   dataf$calib_curve <- as.character(dataf$calib_curve)
   
@@ -43,8 +43,8 @@ predictCN <- function(calib_df, ct_df){
 		stop(paste0(ct_df, " does not contain Ct.value column."))
 	}
 	
-	# check if data_file calib_curve column contains at 
-	# least one identifier in calib_file Targets 
+	# check if ct_df calib_curve column contains at 
+	# least one identifier in calib_df Targets 
 	if(sum(unique(dataf$calib_curve) %in% unique(calib$Target)) == 0) {
 		stop(paste0("no Target identifiers in ", ct_df, " found in ", calib_df))
 	}
@@ -85,8 +85,8 @@ predictCN <- function(calib_df, ct_df){
 }
 
 # test function
-my_test <- conv.CN('data/creran_calib_curve.txt', 'data/creran_field_data.txt')
+my_test <- predictCN('data/creran_calib_curve.txt', 'data/creran_field_data.txt')
 write.table(my_test, "output/creran_field_data_CN_test.csv", sep = ",", row.names = FALSE, col.names = TRUE)
 
-my_neg_test <- conv.CN('data/creran_calib_curve.txt', 'data/test_data.txt')
+my_neg_test <- predictCN('data/creran_calib_curve.txt', 'data/test_data.txt')
 write.table(my_neg_test, "output/creran_field_data_CN_neg_test.csv", sep = ",", row.names = FALSE, col.names = TRUE)
