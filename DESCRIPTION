@@ -1,0 +1,11 @@
+Package: ednar
+Type: Package
+Title: Various Functions for qPCR Targeted eDNA Analysis 
+Version: 0.1.0
+Author: Alex Douglas <alexd106@gmail.com>
+Maintainer: Alex Douglas <alexd106@gmail.com>
+Description: Provides functions for qPCR targeted eDNA
+    analysis. 
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
