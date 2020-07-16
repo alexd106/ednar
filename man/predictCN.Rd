@@ -2,25 +2,24 @@
 % Please edit documentation in R/predictCN.R
 \name{predictCN}
 \alias{predictCN}
-\title{Predict copy number from Ct value using one or more standard curves.}
+\title{Predict Copy Number From Ct Values Using Standard Curves}
 \usage{
 predictCN(calib_df, ct_df, ...)
 }
 \arguments{
 \item{calib_df}{A \code{\link{data.frame}} object containing calibration curve data.}
 
-\item{ct_df}{A \code{\link{data.frame}} object containing Ct value data.}
+\item{ct_df}{A \code{\link{data.frame}} object containing Ct values from environmental samples.}
 
 \item{...}{Placeholder for further arguments that might be needed by future implementations.}
 }
 \value{
 A \code{\link{data.frame}} object containing original data in \code{ct_df} with back transformed
-    copy number predictions (\code{CN_back}) and associated standard errors (\code{CN_back_se}).
+    copy number predictions (\code{CN.back}) and associated standard errors (\code{CN.back.se}).
 }
 \description{
-Converts Ct value (or Cq value) to copy number (CN) using one
-    or more standard curves using inverse prediction. Predictions are back transformed
-    along with associated standard errors.
+Predicts copy number (CN) from Ct (Cq) values from one
+    or more standard curves using inverse prediction.
 }
 \details{
 The \code{calib_df} data.frame object contains data from at least one qPCR calibration curve
@@ -30,11 +29,11 @@ The \code{calib_df} data.frame object contains data from at least one qPCR calib
     Cq (Ct) values and \code{SQ} contains the copy number data. Additional columns will be ignored.
 
     The \code{ct_df} data.frame object usually contains qPCR Cq (Ct) values from sample data. The data.frame must
-    contain the headers \code{calib_curve} and \code{Ct.value}. The \code{calib_curve} column must contain
+    contain the headers \code{calib.curve} and \code{Ct.value}. The \code{calib.curve} column must contain
     at least one unique calibration curve identifier corresponding to those in \code{calib_df}. Any identifiers
     found in \code{ct_df} but not in \code{calib_df} will be ignored and a \code{warning} displayed. The
-    \code{Ct.value} should contain the Cq (Ct) values. Any additional columns in the data.frame will remain
-    unchanged and be included in the returned object.
+    \code{Ct.value} column should contain the Cq (Ct) values from environmental samples. Any additional columns
+    in the data.frame will remain unchanged and be included in the returned object.
 
     Non-detections in either the \code{calib_df} or \code{ct_df} data.frames should be represented as \code{NA}.
 
@@ -42,9 +41,12 @@ The \code{calib_df} data.frame object contains data from at least one qPCR calib
     calibration curve and then using the \code{\link{inverse.predict}} function from the \code{\link{chemCal-package}}
     package.
 }
+\note{
+Copy number values in \code{calib_df} should not be log transformed prior to using this function.
+}
 \examples{
 \dontrun{
-predictCN(calib_df = curve_data, ct_df = field_data)
+my_pred <- predictCN(calib_df = calib_data, ct_df = field_data)
 }
 }
 \references{
