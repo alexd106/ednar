@@ -1,15 +1,15 @@
-#' @title Predict Copy Number From Ct Values Using Standard Curves
+#' @title Predict Copy Number From Ct Values Using qPCR Standard Curves
 #'
 #' @description Predicts copy number (CN) from Ct (Cq) values from one
 #'     or more standard curves using inverse prediction.
 #'
-#' @param calib_df A \code{\link{data.frame}} object containing calibration curve data.
-#' @param ct_df A \code{\link{data.frame}} object containing Ct values from environmental samples.
+#' @param calib_df A \code{\link{data.frame}} or \code{\link{tibble}} object containing calibration curve data.
+#' @param ct_df A \code{\link{data.frame}} or \code{\link{tibble}} object containing Ct values from environmental samples.
 #' @param ... Placeholder for further arguments that might be needed by future implementations.
 #'
-#' @details The \code{calib_df} data.frame object contains data from at least one qPCR calibration curve
+#' @details The \code{calib_df} object contains data for at least one qPCR calibration curve
 #'     usually presented as Cq (Ct) value and corresponding copy number from from a series of serial dilutions.
-#'     The data.frame must contain the headers \code{Target}, \code{Cq} and \code{SQ}. The \code{Target}
+#'     The \code{data.frame} must contain the headers \code{Target}, \code{Cq} and \code{SQ}. The \code{Target}
 #'     column must contain unique identifiers for each calibration curve. The \code{Cq} column contains the
 #'     Cq (Ct) values and \code{SQ} contains the copy number data. Additional columns will be ignored.
 #'
@@ -20,7 +20,7 @@
 #'     \code{Ct.value} column should contain the Cq (Ct) values from environmental samples. Any additional columns
 #'     in the data.frame will remain unchanged and be included in the returned object.
 #'
-#'     Non-detections in either the \code{calib_df} or \code{ct_df} data.frames should be represented as \code{NA}.
+#'     Non-detections in either the \code{calib_df} or \code{ct_df} \code{data.frames} should be represented as \code{NA}.
 #'
 #'     Copy number is predicted from Cq (Ct) values by fitting a linear model (\code{\link{lm}}) to data from each
 #'     calibration curve and then using the \code{\link{inverse.predict}} function from the \code{\link{chemCal-package}}
@@ -31,19 +31,20 @@
 #' @references Massart, L.M, Vandenginste, B.G.M., Buydens, L.M.C., De Jong, S., Lewi, P.J., Smeyers-Verbeke, J. (1997)
 #'      Handbook of Chemometrics and Qualimetrics: Part A, p. 200.
 #'
-#' @return A \code{\link{data.frame}} object containing original data in \code{ct_df} with back transformed
+#' @return A \code{\link{tibble}} object containing original data in \code{ct_df} with back transformed
 #'     copy number predictions (\code{CN.back}) and associated standard errors (\code{CN.back.se}).
 #'
 #' @export
 #' @importFrom chemCal inverse.predict
 #' @importFrom plyr ldply
 #' @importFrom stats lm
+#' @importFrom tibble tibble
 #'
 #' @examples
 #' \dontrun{
 #' my_pred <- predictCN(calib_df = calib_data, ct_df = field_data)
 #' }
-predictCN <- function(calib_df, ct_df, ...){
+calib_predict <- function(calib_df, ct_df, ...){
 	# check correct arguments supplied
 	stopifnot(!missing(calib_df) || class(calib_df == "data.frame"))
 	stopifnot(!missing(ct_df) || class(ct_df == "data.frame"))
@@ -94,7 +95,7 @@ predictCN <- function(calib_df, ct_df, ...){
     # create predictions of CN from Ct using model
     dataf.tmp <- dataf[dataf$calib.curve == in.idx[i],]
     mod.name <- paste0("mod_", in.idx[i])
-    xpred <- t(sapply(dataf.tmp$Ct.value,function(y) chemCal::inverse.predict(mod.list[[mod.name]], y)[1:2]))
+    xpred <- t(sapply(dataf.tmp$Ct.value, function(y) chemCal::inverse.predict(mod.list[[mod.name]], y)[1:2]))
     pred.tmp <- data.frame(plyr::ldply(xpred[,1], data.frame),
     											 abs(plyr::ldply(xpred[,2], data.frame)))
     names(pred.tmp) <- c("CN.pred", "CN.se")
@@ -104,7 +105,7 @@ predictCN <- function(calib_df, ct_df, ...){
     tmp.df <- cbind(dataf.tmp, CN.back = pred.tmp$CN.back, CN.back.se = pred.tmp$CN.back.se)
     new.data <- rbind(new.data, tmp.df)
   }
-  return(new.data)
+  return(tibble(new.data))
 }
 
 
