@@ -12,7 +12,7 @@ status](https://www.r-pkg.org/badges/version/ednar)](https://CRAN.R-project.org/
 <!-- badges: end -->
 
 The goal of ednar is to provide some easy to use functions to help with
-qPCR based eDNA data analysis.
+qPCR based targeted eDNA data analysis.
 
 ## Installation
 
