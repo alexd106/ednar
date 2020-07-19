@@ -24,7 +24,7 @@ theme_calib(
 A \code{\link{ggplot2}} object
 }
 \description{
-ggplot2 Theme For Calibration Curve Plots
+ggplot2 theme used by \code{\link{calib_plot}}.
 }
 \examples{
 \dontrun{

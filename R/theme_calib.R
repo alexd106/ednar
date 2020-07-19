@@ -1,5 +1,7 @@
 
-#' ggplot2 Theme For Calibration Curve Plots
+#' @title ggplot2 Theme For Calibration Curve Plots
+#'
+#' @description ggplot2 theme used by \code{\link{calib_plot}}.
 #'
 #' @param base_size base size
 #' @param base_family base family
