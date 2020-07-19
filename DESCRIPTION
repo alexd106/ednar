@@ -2,7 +2,7 @@ Package: ednar
 Type: Package
 Title: Various Functions for Targeted qPCR eDNA Analysis 
 Version: 0.1.0
-Author: Alex Douglas <alexd106@gmail.com>
+Author: person("Alex", "Douglas", email = "alexd106@gmail.com", role = c("aut", "cre"))
 Maintainer: Alex Douglas <alexd106@gmail.com>
 Description: Provides functions for targeted qPCR eDNA
     analysis. 
