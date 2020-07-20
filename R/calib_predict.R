@@ -46,8 +46,8 @@
 #' }
 calib_predict <- function(calib_df, ct_df, ...){
 	# check correct arguments supplied
-	stopifnot(!missing(calib_df) || class(calib_df == "data.frame"))
-	stopifnot(!missing(ct_df) || class(ct_df == "data.frame"))
+	stopifnot(!missing(calib_df) || class(calib_df) == "data.frame")
+	stopifnot(!missing(ct_df) || class(ct_df) == "data.frame")
 
 	calib <- calib_df
 	dataf <- ct_df
@@ -55,19 +55,19 @@ calib_predict <- function(calib_df, ct_df, ...){
   dataf$calib.curve <- as.character(dataf$calib.curve)
 
 	# check columns names supplied
-	if(sum(colnames(calib)=="Target")!=1) {
+	if(sum(colnames(calib) == "Target") != 1) {
 		stop(paste0(calib_df, " does not contain Targets column."))
 	}
-	if(sum(colnames(calib)=="Cq")!=1) {
+	if(sum(colnames(calib) == "Cq") != 1) {
 		stop(paste0(calib_df, " does not contain Cq column."))
 	}
-	if(sum(colnames(calib)=="SQ")!=1) {
+	if(sum(colnames(calib) == "SQ") != 1) {
 		stop(paste0(calib_df, " does not contain SQ column."))
 	}
-	if(sum(colnames(dataf)=="calib.curve")!=1) {
+	if(sum(colnames(dataf) == "calib.curve") != 1) {
 		stop(paste0(ct_df, " does not contain calib.curve column."))
 	}
-	if(sum(colnames(dataf)=="Ct.value")!=1) {
+	if(sum(colnames(dataf) == "Ct.value") != 1) {
 		stop(paste0(ct_df, " does not contain Ct.value column."))
 	}
 

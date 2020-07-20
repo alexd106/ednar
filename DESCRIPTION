@@ -22,7 +22,8 @@ Imports:
     purrr,
     tidyr,
     ggplot2,
-    scales
+    scales,
+    drc
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 2.10)
