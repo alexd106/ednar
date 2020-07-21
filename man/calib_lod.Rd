@@ -12,45 +12,41 @@ calib_lod(data, threshold = 0.35, lod.fit = "best", loq.fit = "best")
 \item{threshold}{Threshold value for LOQ calculation using coefficient of variation (CV) of Cq (Ct)
 values. Default value = 0.35.}
 
-\item{lod.fit}{Character string to specify method to estimate LOD. Default: \code{'best'}. See details for other
+\item{lod.fit}{Character string to specify method to estimate LOD. Default: \code{"best"}. See details for other
 possible values.}
 
 \item{loq.fit}{Character string to specify method to estimate LOQ based on CV curves. Default: \code{'best'}.
 Other option include \code{'decay'}, \code{'linear'} and \code{'Pn'} (see details).}
 }
 \value{
-A \code{\link{list}} object containing elements \code{dataSum}, \code{standardsSum} and \code{assaySum}.
+A \code{\link{list}} object containing the following objects:
 
-    \code{dataSum}: A summary of the original calibration data with copy number estimate (\code{Copy.Estimate}).
+\code{dataSum}: A summary \code{data.frame} of the original qPCR calibration data including copy number estimate (\code{Copy.Estimate}).
 
-    \code{standardsSum}: A summary of the number of replicates (\code{Rep}), number of detections (\code{Detects})
-    and detection rate (\code{Rate}) for each standard (\code{Standards}) and Target (\code{Target}) combination.
-    The mean (\code{Cq.mean}), standard deviation (\code{Cq.sd}) and coefficient of variation (\code{Cq.CV}) of
-    Cq values and also the coefficient of variation of copy number (\code{Copy.CV}) is given.
+\code{standardsSum}: A summary \code{data.frame} of the standards containing the following variables: number of replicates (\code{Rep}), number of detections (\code{Detects})
+   and detection rate (\code{Rate}) for each standard (\code{Standards}) and Target (\code{Target}) combination.
+   The mean (\code{Cq.mean}), standard deviation (\code{Cq.sd}) and coefficient of variation (\code{Cq.CV}) of
+   Cq values and also the coefficient of variation of copy number (\code{Copy.CV}) is given.
 
-    \code{assaySum}: A summary of the qPCR assay containing the following variables:
+\code{assaySum}: A summary \code{data.frame} of the qPCR assay containing the following variables:
+\describe{
+\item{R.squared:}{The R-squared value of linear regression of all standards Cq-values vs log10 of the starting quantities}
+\item{Slope:}{The slope of the linear regression}
+\item{Intercept:}{The intercept of the linear regression}
+\item{Low.95:}{The lowest standard with at least 95 percent positive detection}
+\item{LOD:}{The 95 percent limit of detection as determined by dose-response modelling}
+\item{LOQ:}{The limit of quantification as determined by decay modelling, using the user-selected CV threshold}
+\item{rep2.LOD:}{The effective limit of detection if analysing in 2 replicates}
+\item{rep3.LOD:}{The effective limit of detection if analysing in 3 replicates}
+\item{rep4.LOD:}{The effective limit of detection if analysing in 4 replicates}
+\item{rep5.LOD:}{The effective limit of detection if analysing in 5 replicates}
+\item{rep8.LOD:}{The effective limit of detection if analysing in 8 replicates}
+\item{LOD.model}{The optimal model when using \code{lod.fit = "best"} model selection, or the user specified model}
+}
 
-          \code{R.squared}: The R-squared value of linear regression of all standards Cq-values vs log10 of the starting quantities.
+\code{LOQlist}: A \code{list} object containing LOQ model components for each Target.
 
-          \code{Slope}: The slope of the linear regression.
-
-          \code{Intercept}: The intercept of the linear regression.
-
-          \code{Low.95}: The lowest standard with at least 95% positive detection.
-
-          \code{LOD}: The 95% limit of detection as determined by dose-response modelling.
-
-          \code{LOQ}: The limit of quantification as determined by decay modelling, using the user-selected CV threshold.
-
-          \code{rep2.LOD}: The effective limit of detection if analysing in 2 replicates.
-
-          \code{rep3.LOD}: The effective limit of detection if analysing in 3 replicates.
-
-          \code{rep4.LOD}: The effective limit of detection if analysing in 4 replicates.
-
-          \code{rep5.LOD}: The effective limit of detection if analysing in 5 replicates.
-
-          \code{rep8.LOD}: The effective limit of detection if analysing in 8 replicates.
+\code{LODlist}: A \code{list} object containing LOD model components for each Target.
 }
 \description{
 Calculate threshold and model based LOD and LOQ for qPCR eDNA assays based on one or
@@ -65,30 +61,35 @@ The \code{data} object contains data for at least one qPCR calibration curve
    Cq (Ct) values and \code{SQ} contains the copy number data. Additional columns will be ignored. Non-detections
    in \code{data} should be represented as \code{NA}.
 
-   The \code{lod.fit} argument is used to select the method to estimate LOD. Selecting 'best' will automatically
-   fit 15 models available from the package \code{drc} and perform model selection based on log
+   The \code{lod.fit} argument is used to select the method to estimate LOD. Selecting "best" will automatically
+   fit all models available from the package \code{drc} and perform model selection based on log
    likelihood values, Akaike's information criterion and residual variance using the \code{\link[drc]{mselect}}
-   function. Information on other possible models can be displayed by running the \code{\link[drc]{getMeanFunctions}}
-   function. For example to fit a 4 parameter Weibull type II model use \code{lod.fit = 'W2.4()'}.
+   function. Information on possible models can be displayed with the \code{\link[drc]{getMeanFunctions}}
+   function. For example, to fit a 4 parameter Weibull type II model use \code{lod.fit = "W2.4"}.
 
-   The \code{loq.fit} argument is used to select the method to estimate LOQ. Selecting 'best' will automatically
+   The \code{loq.fit} argument is used to select the method to estimate LOQ. Selecting "best" will automatically
    select the model with lowest residual standard error. 'decay' uses the exponential decay model, 'linear'
    uses a linear model and 'Pn' fits an nth-order polynomial model where n is numerical. For example,
-   \code{loq.fit = 'P2'} will fit a 2nd-order polynomial model and \code{loq.fit = 'Ps'} will use a 3rd-order.
-   Selecting 'best' will test polynomial models up to 6th-order.
+   \code{loq.fit = "P2"} will fit a 2nd-order polynomial model and \code{loq.fit = "P3"} will use a 3rd-order.
+   Selecting "best" will test polynomial models up to 6th-order.
 }
 \examples{
 \dontrun{
- qpcr_lod <- calib_lod(data = calib_data, threshold = 0.35,
-               lod.fit = "best", loq.fit = "best")
- qpcr_lod
+#
+qpcr_lod <- calib_lod(data = calib_data, threshold = 0.35,
+              lod.fit = "best", loq.fit = "best")
+qpcr_lod
 
- qpcr_lod_decay <- calib_lod(data = calib_data, threshold = 0.35,
-                     lod.fit = "best", loq.fit = "decay")
+# decay modelling estimate for LOQ
+qpcr_lod_decay <- calib_lod(data = calib_data, threshold = 0.35,
+                    lod.fit = "best", loq.fit = "decay")
+qpcr_lod_decay
 
- qpcr_lod_W2 <- calib_lod(data = calib_data, threshold = 0.35,
-                  lod.fit = "W2.4()", loq.fit = "best")
- qpcr_lod_W2
+# 4 parameter Weibull type II model fitted to estimate LOD
+
+qpcr_lod_W2 <- calib_lod(data = calib_data, threshold = 0.35,
+                 lod.fit = "W2.4", loq.fit = "best")
+qpcr_lod_W2
  }
 
 

@@ -55,19 +55,19 @@ calib_predict <- function(calib_df, ct_df, ...){
   dataf$calib.curve <- as.character(dataf$calib.curve)
 
 	# check columns names supplied
-	if(sum(colnames(calib) == "Target") != 1) {
+	if(!any(colnames(calib) == "Target")) {
 		stop(paste0(calib_df, " does not contain Targets column."))
 	}
-	if(sum(colnames(calib) == "Cq") != 1) {
+	if(!any(colnames(calib) == "Cq")) {
 		stop(paste0(calib_df, " does not contain Cq column."))
 	}
-	if(sum(colnames(calib) == "SQ") != 1) {
+	if(!any(colnames(calib) == "SQ")) {
 		stop(paste0(calib_df, " does not contain SQ column."))
 	}
-	if(sum(colnames(dataf) == "calib.curve") != 1) {
+	if(!any(colnames(dataf) == "calib.curve")) {
 		stop(paste0(ct_df, " does not contain calib.curve column."))
 	}
-	if(sum(colnames(dataf) == "Ct.value") != 1) {
+	if(!any(colnames(dataf) == "Ct.value")) {
 		stop(paste0(ct_df, " does not contain Ct.value column."))
 	}
 

@@ -137,7 +137,7 @@ values. Default value = 0.35.</p></td>
     </tr>
     <tr>
       <th>lod.fit</th>
-      <td><p>Character string to specify method to estimate LOD. Default: <code>'best'</code>. See details for other
+      <td><p>Character string to specify method to estimate LOD. Default: <code>"best"</code>. See details for other
 possible values.</p></td>
     </tr>
     <tr>
@@ -149,24 +149,30 @@ Other option include <code>'decay'</code>, <code>'linear'</code> and <code>'Pn'<
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <code><a href='https://rdrr.io/r/base/list.html'>list</a></code> object containing elements <code>dataSum</code>, <code>standardsSum</code> and <code>assaySum</code>.</p>
-<p><code>dataSum</code>: A summary of the original calibration data with copy number estimate (<code>Copy.Estimate</code>).</p>
-<p><code>standardsSum</code>: A summary of the number of replicates (<code>Rep</code>), number of detections (<code>Detects</code>)
-    and detection rate (<code>Rate</code>) for each standard (<code>Standards</code>) and Target (<code>Target</code>) combination.
-    The mean (<code>Cq.mean</code>), standard deviation (<code>Cq.sd</code>) and coefficient of variation (<code>Cq.CV</code>) of
-    Cq values and also the coefficient of variation of copy number (<code>Copy.CV</code>) is given.</p>
-<p><code>assaySum</code>: A summary of the qPCR assay containing the following variables:</p>
-<p><code>R.squared</code>: The R-squared value of linear regression of all standards Cq-values vs log10 of the starting quantities.</p>
-<p><code>Slope</code>: The slope of the linear regression.</p>
-<p><code>Intercept</code>: The intercept of the linear regression.</p>
-<p><code>Low.95</code>: The lowest standard with at least 95<!-- % positive detection. --></p>
-<p><code>LOD</code>: The 95<!-- % limit of detection as determined by dose-response modelling. --></p>
-<p><code>LOQ</code>: The limit of quantification as determined by decay modelling, using the user-selected CV threshold.</p>
-<p><code>rep2.LOD</code>: The effective limit of detection if analysing in 2 replicates.</p>
-<p><code>rep3.LOD</code>: The effective limit of detection if analysing in 3 replicates.</p>
-<p><code>rep4.LOD</code>: The effective limit of detection if analysing in 4 replicates.</p>
-<p><code>rep5.LOD</code>: The effective limit of detection if analysing in 5 replicates.</p>
-<p><code>rep8.LOD</code>: The effective limit of detection if analysing in 8 replicates.</p>
+    <p>A <code><a href='https://rdrr.io/r/base/list.html'>list</a></code> object containing the following objects:</p>
+<p><code>dataSum</code>: A summary <code>data.frame</code> of the original qPCR calibration data including copy number estimate (<code>Copy.Estimate</code>).</p>
+<p><code>standardsSum</code>: A summary <code>data.frame</code> of the standards containing the following variables: number of replicates (<code>Rep</code>), number of detections (<code>Detects</code>)
+   and detection rate (<code>Rate</code>) for each standard (<code>Standards</code>) and Target (<code>Target</code>) combination.
+   The mean (<code>Cq.mean</code>), standard deviation (<code>Cq.sd</code>) and coefficient of variation (<code>Cq.CV</code>) of
+   Cq values and also the coefficient of variation of copy number (<code>Copy.CV</code>) is given.</p>
+<p><code>assaySum</code>: A summary <code>data.frame</code> of the qPCR assay containing the following variables:</p><dl'>
+<dt>R.squared:</dt><dd><p>The R-squared value of linear regression of all standards Cq-values vs log10 of the starting quantities</p></dd>
+<dt>Slope:</dt><dd><p>The slope of the linear regression</p></dd>
+<dt>Intercept:</dt><dd><p>The intercept of the linear regression</p></dd>
+<dt>Low.95:</dt><dd><p>The lowest standard with at least 95 percent positive detection</p></dd>
+<dt>LOD:</dt><dd><p>The 95 percent limit of detection as determined by dose-response modelling</p></dd>
+<dt>LOQ:</dt><dd><p>The limit of quantification as determined by decay modelling, using the user-selected CV threshold</p></dd>
+<dt>rep2.LOD:</dt><dd><p>The effective limit of detection if analysing in 2 replicates</p></dd>
+<dt>rep3.LOD:</dt><dd><p>The effective limit of detection if analysing in 3 replicates</p></dd>
+<dt>rep4.LOD:</dt><dd><p>The effective limit of detection if analysing in 4 replicates</p></dd>
+<dt>rep5.LOD:</dt><dd><p>The effective limit of detection if analysing in 5 replicates</p></dd>
+<dt>rep8.LOD:</dt><dd><p>The effective limit of detection if analysing in 8 replicates</p></dd>
+<dt>LOD.model</dt><dd><p>The optimal model when using <code>lod.fit = "best"</code> model selection, or the user specified model</p></dd>
+
+</dl>
+
+<p><code>LOQlist</code>: A <code>list</code> object containing LOQ model components for each Target.</p>
+<p><code>LODlist</code>: A <code>list</code> object containing LOD model components for each Target.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The <code>data</code> object contains data for at least one qPCR calibration curve
@@ -175,16 +181,16 @@ Other option include <code>'decay'</code>, <code>'linear'</code> and <code>'Pn'<
    column must contain unique identifiers for each calibration curve. The <code>Cq</code> column contains the
    Cq (Ct) values and <code>SQ</code> contains the copy number data. Additional columns will be ignored. Non-detections
    in <code>data</code> should be represented as <code>NA</code>.</p>
-<p>The <code>lod.fit</code> argument is used to select the method to estimate LOD. Selecting 'best' will automatically
-   fit 15 models available from the package <code>drc</code> and perform model selection based on log
+<p>The <code>lod.fit</code> argument is used to select the method to estimate LOD. Selecting "best" will automatically
+   fit all models available from the package <code>drc</code> and perform model selection based on log
    likelihood values, Akaike's information criterion and residual variance using the <code><a href='https://rdrr.io/pkg/drc/man/mselect.html'>mselect</a></code>
-   function. Information on other possible models can be displayed by running the <code><a href='https://rdrr.io/pkg/drc/man/getMeanFunctions.html'>getMeanFunctions</a></code>
-   function. For example to fit a 4 parameter Weibull type II model use <code>lod.fit = 'W2.4()'</code>.</p>
-<p>The <code>loq.fit</code> argument is used to select the method to estimate LOQ. Selecting 'best' will automatically
+   function. Information on possible models can be displayed with the <code><a href='https://rdrr.io/pkg/drc/man/getMeanFunctions.html'>getMeanFunctions</a></code>
+   function. For example, to fit a 4 parameter Weibull type II model use <code>lod.fit = "W2.4"</code>.</p>
+<p>The <code>loq.fit</code> argument is used to select the method to estimate LOQ. Selecting "best" will automatically
    select the model with lowest residual standard error. 'decay' uses the exponential decay model, 'linear'
    uses a linear model and 'Pn' fits an nth-order polynomial model where n is numerical. For example,
-   <code>loq.fit = 'P2'</code> will fit a 2nd-order polynomial model and <code>loq.fit = 'Ps'</code> will use a 3rd-order.
-   Selecting 'best' will test polynomial models up to 6th-order.</p>
+   <code>loq.fit = "P2"</code> will fit a 2nd-order polynomial model and <code>loq.fit = "P3"</code> will use a 3rd-order.
+   Selecting "best" will test polynomial models up to 6th-order.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Merkes CM, Klymus KE, Allison MJ, Goldberg C, Helbing CC, Hunter ME, Jackson CA, Lance RF,
@@ -198,16 +204,21 @@ Other option include <code>'decay'</code>, <code>'linear'</code> and <code>'Pn'<
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
- <span class='no'>qpcr_lod</span> <span class='kw'>&lt;-</span> <span class='fu'>calib_lod</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>calib_data</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.35</span>,
-               <span class='kw'>lod.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>, <span class='kw'>loq.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>)
- <span class='no'>qpcr_lod</span>
+<span class='co'>#</span>
+<span class='no'>qpcr_lod</span> <span class='kw'>&lt;-</span> <span class='fu'>calib_lod</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>calib_data</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.35</span>,
+              <span class='kw'>lod.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>, <span class='kw'>loq.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>)
+<span class='no'>qpcr_lod</span>
 
- <span class='no'>qpcr_lod_decay</span> <span class='kw'>&lt;-</span> <span class='fu'>calib_lod</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>calib_data</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.35</span>,
-                     <span class='kw'>lod.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>, <span class='kw'>loq.fit</span> <span class='kw'>=</span> <span class='st'>"decay"</span>)
+<span class='co'># decay modelling estimate for LOQ</span>
+<span class='no'>qpcr_lod_decay</span> <span class='kw'>&lt;-</span> <span class='fu'>calib_lod</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>calib_data</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.35</span>,
+                    <span class='kw'>lod.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>, <span class='kw'>loq.fit</span> <span class='kw'>=</span> <span class='st'>"decay"</span>)
+<span class='no'>qpcr_lod_decay</span>
 
- <span class='no'>qpcr_lod_W2</span> <span class='kw'>&lt;-</span> <span class='fu'>calib_lod</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>calib_data</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.35</span>,
-                  <span class='kw'>lod.fit</span> <span class='kw'>=</span> <span class='st'>"W2.4()"</span>, <span class='kw'>loq.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>)
- <span class='no'>qpcr_lod_W2</span>
+<span class='co'># 4 parameter Weibull type II model fitted to estimate LOD</span>
+
+<span class='no'>qpcr_lod_W2</span> <span class='kw'>&lt;-</span> <span class='fu'>calib_lod</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>calib_data</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.35</span>,
+                 <span class='kw'>lod.fit</span> <span class='kw'>=</span> <span class='st'>"W2.4"</span>, <span class='kw'>loq.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>)
+<span class='no'>qpcr_lod_W2</span>
  }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

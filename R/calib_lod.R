@@ -7,7 +7,7 @@
 #' @param data A \code{\link{data.frame}} or \code{\link{tibble}} object containing calibration curve data.
 #' @param threshold Threshold value for LOQ calculation using coefficient of variation (CV) of Cq (Ct)
 #'     values. Default value = 0.35.
-#' @param lod.fit Character string to specify method to estimate LOD. Default: \code{'best'}. See details for other
+#' @param lod.fit Character string to specify method to estimate LOD. Default: \code{"best"}. See details for other
 #'     possible values.
 #' @param loq.fit Character string to specify method to estimate LOQ based on CV curves. Default: \code{'best'}.
 #'     Other option include \code{'decay'}, \code{'linear'} and \code{'Pn'} (see details).
@@ -19,50 +19,46 @@
 #'    Cq (Ct) values and \code{SQ} contains the copy number data. Additional columns will be ignored. Non-detections
 #'    in \code{data} should be represented as \code{NA}.
 #'
-#'    The \code{lod.fit} argument is used to select the method to estimate LOD. Selecting 'best' will automatically
-#'    fit 15 models available from the package \code{drc} and perform model selection based on log
+#'    The \code{lod.fit} argument is used to select the method to estimate LOD. Selecting "best" will automatically
+#'    fit all models available from the package \code{drc} and perform model selection based on log
 #'    likelihood values, Akaike's information criterion and residual variance using the \code{\link[drc]{mselect}}
-#'    function. Information on other possible models can be displayed by running the \code{\link[drc]{getMeanFunctions}}
-#'    function. For example to fit a 4 parameter Weibull type II model use \code{lod.fit = 'W2.4()'}.
+#'    function. Information on possible models can be displayed with the \code{\link[drc]{getMeanFunctions}}
+#'    function. For example, to fit a 4 parameter Weibull type II model use \code{lod.fit = "W2.4"}.
 #'
-#'    The \code{loq.fit} argument is used to select the method to estimate LOQ. Selecting 'best' will automatically
+#'    The \code{loq.fit} argument is used to select the method to estimate LOQ. Selecting "best" will automatically
 #'    select the model with lowest residual standard error. 'decay' uses the exponential decay model, 'linear'
 #'    uses a linear model and 'Pn' fits an nth-order polynomial model where n is numerical. For example,
-#'    \code{loq.fit = 'P2'} will fit a 2nd-order polynomial model and \code{loq.fit = 'Ps'} will use a 3rd-order.
-#'    Selecting 'best' will test polynomial models up to 6th-order.
+#'    \code{loq.fit = "P2"} will fit a 2nd-order polynomial model and \code{loq.fit = "P3"} will use a 3rd-order.
+#'    Selecting "best" will test polynomial models up to 6th-order.
 #'
-#' @return A \code{\link{list}} object containing elements \code{dataSum}, \code{standardsSum} and \code{assaySum}.
+#' @return A \code{\link{list}} object containing the following objects:
 #'
-#'     \code{dataSum}: A summary of the original calibration data with copy number estimate (\code{Copy.Estimate}).
+#' \code{dataSum}: A summary \code{data.frame} of the original qPCR calibration data including copy number estimate (\code{Copy.Estimate}).
 #'
-#'     \code{standardsSum}: A summary of the number of replicates (\code{Rep}), number of detections (\code{Detects})
-#'     and detection rate (\code{Rate}) for each standard (\code{Standards}) and Target (\code{Target}) combination.
-#'     The mean (\code{Cq.mean}), standard deviation (\code{Cq.sd}) and coefficient of variation (\code{Cq.CV}) of
-#'     Cq values and also the coefficient of variation of copy number (\code{Copy.CV}) is given.
+#' \code{standardsSum}: A summary \code{data.frame} of the standards containing the following variables: number of replicates (\code{Rep}), number of detections (\code{Detects})
+#'    and detection rate (\code{Rate}) for each standard (\code{Standards}) and Target (\code{Target}) combination.
+#'    The mean (\code{Cq.mean}), standard deviation (\code{Cq.sd}) and coefficient of variation (\code{Cq.CV}) of
+#'    Cq values and also the coefficient of variation of copy number (\code{Copy.CV}) is given.
 #'
-#'     \code{assaySum}: A summary of the qPCR assay containing the following variables:
+#' \code{assaySum}: A summary \code{data.frame} of the qPCR assay containing the following variables:
+#' \describe{
+#' \item{R.squared:}{The R-squared value of linear regression of all standards Cq-values vs log10 of the starting quantities}
+#' \item{Slope:}{The slope of the linear regression}
+#' \item{Intercept:}{The intercept of the linear regression}
+#' \item{Low.95:}{The lowest standard with at least 95 percent positive detection}
+#' \item{LOD:}{The 95 percent limit of detection as determined by dose-response modelling}
+#' \item{LOQ:}{The limit of quantification as determined by decay modelling, using the user-selected CV threshold}
+#' \item{rep2.LOD:}{The effective limit of detection if analysing in 2 replicates}
+#' \item{rep3.LOD:}{The effective limit of detection if analysing in 3 replicates}
+#' \item{rep4.LOD:}{The effective limit of detection if analysing in 4 replicates}
+#' \item{rep5.LOD:}{The effective limit of detection if analysing in 5 replicates}
+#' \item{rep8.LOD:}{The effective limit of detection if analysing in 8 replicates}
+#' \item{LOD.model}{The optimal model when using \code{lod.fit = "best"} model selection, or the user specified model}
+#' }
 #'
-#'           \code{R.squared}: The R-squared value of linear regression of all standards Cq-values vs log10 of the starting quantities.
+#' \code{LOQlist}: A \code{list} object containing LOQ model components for each Target.
 #'
-#'           \code{Slope}: The slope of the linear regression.
-#'
-#'           \code{Intercept}: The intercept of the linear regression.
-#'
-#'           \code{Low.95}: The lowest standard with at least 95% positive detection.
-#'
-#'           \code{LOD}: The 95% limit of detection as determined by dose-response modelling.
-#'
-#'           \code{LOQ}: The limit of quantification as determined by decay modelling, using the user-selected CV threshold.
-#'
-#'           \code{rep2.LOD}: The effective limit of detection if analysing in 2 replicates.
-#'
-#'           \code{rep3.LOD}: The effective limit of detection if analysing in 3 replicates.
-#'
-#'           \code{rep4.LOD}: The effective limit of detection if analysing in 4 replicates.
-#'
-#'           \code{rep5.LOD}: The effective limit of detection if analysing in 5 replicates.
-#'
-#'           \code{rep8.LOD}: The effective limit of detection if analysing in 8 replicates.
+#' \code{LODlist}: A \code{list} object containing LOD model components for each Target.
 #'
 #' @references Merkes CM, Klymus KE, Allison MJ, Goldberg C, Helbing CC, Hunter ME, Jackson CA, Lance RF,
 #'     Mangan AM, Monroe EM, Piaggio AJ, Stokdyk JP, Wilson CC, Richter C. (2019) Generic qPCR Limit of
@@ -76,16 +72,21 @@
 #'
 #' @examples
 #' \dontrun{
-#'  qpcr_lod <- calib_lod(data = calib_data, threshold = 0.35,
-#'                lod.fit = "best", loq.fit = "best")
-#'  qpcr_lod
+#' #
+#' qpcr_lod <- calib_lod(data = calib_data, threshold = 0.35,
+#'               lod.fit = "best", loq.fit = "best")
+#' qpcr_lod
 #'
-#'  qpcr_lod_decay <- calib_lod(data = calib_data, threshold = 0.35,
-#'                      lod.fit = "best", loq.fit = "decay")
+#' # decay modelling estimate for LOQ
+#' qpcr_lod_decay <- calib_lod(data = calib_data, threshold = 0.35,
+#'                     lod.fit = "best", loq.fit = "decay")
+#' qpcr_lod_decay
 #'
-#'  qpcr_lod_W2 <- calib_lod(data = calib_data, threshold = 0.35,
-#'                   lod.fit = "W2.4()", loq.fit = "best")
-#'  qpcr_lod_W2
+#' # 4 parameter Weibull type II model fitted to estimate LOD
+#'
+#' qpcr_lod_W2 <- calib_lod(data = calib_data, threshold = 0.35,
+#'                  lod.fit = "W2.4", loq.fit = "best")
+#' qpcr_lod_W2
 #'  }
 #'
 #'
@@ -101,24 +102,27 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
 	if (threshold > 1 | threshold < 0){
 		stop("'threshold' must be between 0 and 1")
 	}
-	stopifnot(class(lod.fit) == "character")
 	stopifnot(class(loq.fit) == "character")
-
+	stopifnot(class(lod.fit) == "character")
 	DAT <- data
 
 	# check columns names supplied
-	if(sum(colnames(DAT) == "Target") != 1) {
+	if(!any(colnames(DAT) == "Target")) {
 		stop(paste0(data, " does not contain Targets column."))
 	}
-	if(sum(colnames(DAT) == "Cq") != 1) {
+	if(!any(colnames(DAT) == "Cq")) {
 		stop(paste0(data, " does not contain Cq column."))
 	}
-	if(sum(colnames(DAT) == "SQ") != 1) {
+	if(!any(colnames(DAT) == "SQ")) {
 		stop(paste0(data, " does not contain SQ column."))
 	}
 
   LOQ.Threshold <- threshold
-  LOD.FCT <- lod.fit
+  if(lod.fit == "best") {
+  	LOD.FCT <- lod.fit
+  } else {
+  	LOD.FCT <- drc::getMeanFunctions(fname = lod.fit)[[1]]
+  }
   LOQ.FCT <- loq.fit
 
   ## Ensure data is in the proper format
@@ -150,15 +154,16 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
     OUTS$Outliers[i] <- paste(c(A, B), collapse = ",")
     }
   }
-  ## If any outliers are detected, export the raw data as csv and make a note in
-  ##   the analysis log.
+  ## If any outliers are detected
   if (sum(!is.na(OUTS$Outliers)) > 0) {
   OUT.ROW <- paste(OUTS$Outliers[!is.na(OUTS$Outliers)], collapse = ",")
   OUT.ROW2 <- unlist(strsplit(OUT.ROW, split = ","))
+  message("warning: Potential outliers detected: ")
+  print(DAT[OUT.ROW2,])
   }
 
   ## Generate standard curves using all data and calculate copy estimates for each
-  ##   replicate using the curves:
+  ## replicate using the curves:
   curve.list <- rep(NA, length(Targets))
   DAT$Copy.Estimate <- rep(NA, nrow(DAT))
   DAT$Mod <- rep(0, nrow(DAT))
@@ -211,13 +216,14 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   DAT2$Rate <- DAT2$Detects/DAT2$Reps
   ## Determine LoD and LoQ by modeling, and summarize each assay:
   DAT$Detect <- as.numeric(!is.na(DAT$Cq))
-  # LOD.list <- ""
-  LOD.list2 <- ""
-  LOD.list3 <- ""
-  LOQ.list <- ""
+  LOD.list2 <- vector(mode = "list", length = length(Targets))
+  LOD.list3 <- vector(mode = "list", length = length(Targets))
+  LOQ.list <- vector(mode = "list", length = length(Targets))
+  LOD.out <- vector(mode = "list", length = length(Targets))
+  LOQ.out <- vector(mode = "list", length = length(Targets))
   DAT3 <- data.frame(Assay = Targets, R.squared = NA, Slope = NA, Intercept = NA, Low.95 = NA,
                      LOD = NA, LOQ = NA, rep2.LOD = NA, rep3.LOD = NA, rep4.LOD = NA, rep5.LOD = NA,
-  									 rep8.LOD = NA)
+  									 rep8.LOD = NA, LOD.model = NA)
   LOD.FCTS <- list(LL.2(), LL.3(), LL.3u(), LL.4(), LL.5(), W1.2(), W1.3(), W1.4(), W2.2(), W2.3(),
                    W2.4(), AR.2(), AR.3(), MM.2(), MM.3())
 
@@ -242,43 +248,43 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
                  data = DAT2[DAT2$Target == Targets[i], ])
   		}, error = function(e) {
   			e
-  			cat("ERROR: decay LOQ model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: decay LOQ model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
   		tryCatch({ #skip if model cannot be determined.
   			LOQ2 <- stats::lm(Cq.CV ~ log10(Standards), data = DAT2[DAT2$Target == Targets[i], ])
   		}, error = function(e) {
   			e
-  			cat("ERROR: linear LOQ model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: linear LOQ model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
   		tryCatch({ #skip if model cannot be determined.
   			LOQ3 <- stats::lm(Cq.CV ~ poly(log10(Standards), 2), data = DAT2[DAT2$Target == Targets[i], ])
   		}, error = function(e) {
   			e
-  			cat("ERROR: 2nd polynomial LOQ model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: 2nd polynomial LOQ model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
   		tryCatch({ #skip if model cannot be determined.
   			LOQ4 <- stats::lm(Cq.CV ~ poly(log10(Standards), 3), data = DAT2[DAT2$Target == Targets[i], ])
   		}, error = function(e) {
   			e
-  			cat("ERROR: 3rd polynomial LOQ model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: 3rd polynomial LOQ model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
   		tryCatch({ #skip if model cannot be determined.
   			LOQ5 <- stats::lm(Cq.CV ~ poly(log10(Standards), 4), data = DAT2[DAT2$Target == Targets[i], ])
   		}, error = function(e) {
   			e
-  			cat("ERROR: 4th polynomial LOQ model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: 4th polynomial LOQ model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
   		tryCatch({ #skip if model cannot be determined.
   			LOQ6 <- stats::lm(Cq.CV ~ poly(log10(Standards), 5), data = DAT2[DAT2$Target == Targets[i], ])
   		}, error = function(e) {
   			e
-  			cat("ERROR: 5th polynomial LOQ model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: 5th polynomial LOQ model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
   		tryCatch({ #skip if model cannot be determined.
   			LOQ7 <- stats::lm(Cq.CV ~ poly(log10(Standards), 6), data = DAT2[DAT2$Target == Targets[i], ])
   		}, error = function(e) {
   			e
-  			cat("ERROR: 6th polynomial LOQ model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: 6th polynomial LOQ model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
 
   		## Determine which models were able to be determined:
@@ -293,7 +299,7 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   			}
   			C <- which(LOQ.res == min(LOQ.res, na.rm = TRUE))
   			assign(paste0("LOQ.mod", i), get(B[C]))
-  			LOQ.list <- c(LOQ.list, paste0("LOQ.mod", i))
+  			LOQ.list[[i]] <- paste0("LOQ.mod", i)
   		}
   	}
   	## Define LOQ model by exponential decay modelling:
@@ -301,10 +307,10 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   		tryCatch({ #skip if model cannot be determined.
   			assign(paste0("LOQ.mod", i), stats::nls(Cq.CV ~ SSasymp(log10(Standards), Asym, R0, lrc),
                                       data = DAT2[DAT2$Target == Targets[i], ]))
-  			LOQ.list <- c(LOQ.list, paste0("LOQ.mod", i))
+  			LOQ.list[[i]] <- paste0("LOQ.mod", i)
   		}, error = function(e) {
   			e
-  			cat("ERROR: decay LOQ model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: decay LOQ model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
   	}
   	## Define LOQ model by linear modelling:
@@ -312,10 +318,10 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   		tryCatch({ #skip if model cannot be determined.
   			assign(paste0("LOQ.mod", i), stats::lm(Cq.CV ~ log10(Standards),
   																		data = DAT2[DAT2$Target == Targets[i], ]))
-  			LOQ.list <- c(LOQ.list, paste0("LOQ.mod", i))
+  			LOQ.list[[i]] <- paste0("LOQ.mod", i)
   		}, error = function(e) {
   			e
-  			cat("ERROR: linear LOQ model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: linear LOQ model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
   	}
   	## Define LOQ model by polynomial modelling:
@@ -324,74 +330,85 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   		tryCatch({ #skip if model cannot be determined.
   			assign(paste0("LOQ.mod", i),stats::lm(Cq.CV ~ poly(log10(Standards), Z),
   																		data = DAT2[DAT2$Target == Targets[i], ]))
-  			LOQ.list <- c(LOQ.list, paste0("LOQ.mod", i))
+  			LOQ.list[[i]] <- paste0("LOQ.mod", i)
   		}, error = function(e) {
   			e
-  			cat("ERROR: ", Z, "-order polynomial LOQ model cannot be defined for ",
-  					as.character(Targets[i]), sep = "")
+  			cat("warning: ", Z, "-order polynomial LOQ model cannot be defined for ",
+  					as.character(Targets[i]), "\n", sep = "")
   		})
   	}
   	## Signal undetermined model with NA:
-  	if(length(LOQ.list) < i+1) {
-  		LOQ.list <- c(LOQ.list, NA)
+  	if(length(LOQ.list) < i) {
+  		LOQ.list[[i]] <- NA
   	}
   	## Define the logarithmic model for LOD using user-selected function:
   	if(is.list(LOD.FCT) == TRUE) {
   		tryCatch({ #skip if model cannot be determined.
   			assign(paste0("LOD.mod2", i), drc::drm(Detect ~ SQ, data = DAT[DAT$Target == Targets[i], ], fct = LOD.FCT))
-  			LOD.list2 <- c(LOD.list2, paste0("LOD.mod2", i))
-  			LOD.list3 <- c(LOD.list3, LOD.FCT$name)
+  			LOD.list2[[i]] <- paste0("LOD.mod2", i)
+  			LOD.list3[[i]] <- LOD.FCT$name
   		}, error = function(e) {
   			e
-  			cat("ERROR: LOD model cannot be defined for ", as.character(Targets[i]), sep = "")
+  			cat("warning: LOD model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   		})
   	}
   	## Define the logarithmic model with function automatically selected:
-  		if(LOD.FCT == "best") {
+  		if(LOD.FCT[1] == "best") {
   			tryCatch({ #skip if model cannot be determined.
   				## Pull out data for specific assay:
   				TEMP.DAT <- DAT[DAT$Target == Targets[i], ]
   				## Define a model to start with:
+
   				LOD.mod <- drc::drm(Detect ~ SQ, data = TEMP.DAT, fct = W2.4())
   				## Test all available models and select the best one:
-  				LOD.FCT2 <- row.names(drc::mselect(LOD.mod, LOD.FCTS))[1]
+  				LOD.FCT2 <- suppressWarnings(row.names(drc::mselect(LOD.mod, LOD.FCTS))[1])
   				LOD.FCT3 <- drc::getMeanFunctions(fname = LOD.FCT2)
   				assign(paste0("LOD.mod2", i), drc::drm(Detect ~ SQ, data = DAT[DAT$Target == Targets[i], ], fct = LOD.FCT3[[1]]))
-  				LOD.list2 <- c(LOD.list2, paste0("LOD.mod2", i))
-  				LOD.list3 <- c(LOD.list3, LOD.FCT2)
+  				LOD.list2[[i]] <- paste0("LOD.mod2", i)
+  				LOD.list3[[i]] <- LOD.FCT2
   			}, error = function(e) {
   				e
-  				cat("ERROR: LOD model cannot be defined for ", as.character(Targets[i]), sep = "")
+  				cat("warning: LOD model cannot be defined for ", as.character(Targets[i]), "\n", sep = "")
   			})
   		}
 
   	## Signal undetermined model with NA:
-  	if(length(LOD.list2) < i+1) {
-  		LOD.list2 <- c(LOD.list2, NA)
-  		LOD.list3 <- c(LOD.list3, NA)
+  	if(length(LOD.list2) < i) {
+  		LOD.list2[[i]] <- NA
+  		LOD.list3[[i]] <- NA
   	}
+
+  	# LOD.list2 output
+  	  LOD.out[[i]] <- get(LOD.list2[[i]])
+  	  names(LOD.out)[i] <- LOD.list2[[i]]
+
+  	# LOQ.list output
+  	  LOQ.out[[i]] <- get(LOQ.list[[i]])
+  		names(LOQ.out)[i] <- LOQ.list[[i]]
+
   	## Populate summary data:
   	DAT3$R.squared[i] <- summary(get(curve.list[i]))$r.squared
   	DAT3$Slope[i] <- coef(get(curve.list[i]))[2]
   	DAT3$Intercept[i] <- coef(get(curve.list[i]))[1]
   	DAT3$Low.95[i] <- min(DAT2$Standards[DAT2$Rate >= 0.95 & DAT2$Target == Targets[i]])
   	## Only get LOD values if the LOD model is defined:
-  	if(!is.na(LOD.list2[i+1])) {
-  		DAT3$LOD[i] <- drc::ED(get(LOD.list2[i+1]), 0.95, type = "absolute")[1]
-  		DAT3$rep2.LOD[i] <- drc::ED(get(LOD.list2[i+1]), 1 - sqrt(0.05), type = "absolute")[1]
-  		DAT3$rep3.LOD[i] <- drc::ED(get(LOD.list2[i+1]), 1 - 0.05^(1/3), type = "absolute")[1]
-  		DAT3$rep4.LOD[i] <- drc::ED(get(LOD.list2[i+1]), 1 - 0.05^0.25, type = "absolute")[1]
-  		DAT3$rep5.LOD[i] <- drc::ED(get(LOD.list2[i+1]), 1 - 0.05^0.2, type = "absolute")[1]
-  		DAT3$rep8.LOD[i] <- drc::ED(get(LOD.list2[i+1]), 1 - 0.05^0.125, type = "absolute")[1]
+  	if(!is.na(LOD.list2[i])) {
+  		DAT3$LOD.model[i] <- LOD.list3[[i]]
+  		DAT3$LOD[i] <- suppressWarnings(drc::ED(get(LOD.list2[[i]]), 0.95, type = "absolute", display = FALSE)[1])
+  		DAT3$rep2.LOD[i] <- suppressWarnings(drc::ED(get(LOD.list2[[i]]), 1 - sqrt(0.05), type = "absolute", display = FALSE)[1])
+  		DAT3$rep3.LOD[i] <- suppressWarnings(drc::ED(get(LOD.list2[[i]]), 1 - 0.05^(1/3), type = "absolute", display = FALSE)[1])
+  		DAT3$rep4.LOD[i] <- suppressWarnings(drc::ED(get(LOD.list2[[i]]), 1 - 0.05^0.25, type = "absolute", display = FALSE)[1])
+  		DAT3$rep5.LOD[i] <- suppressWarnings(drc::ED(get(LOD.list2[[i]]), 1 - 0.05^0.2, type = "absolute", display = FALSE)[1])
+  		DAT3$rep8.LOD[i] <- suppressWarnings(drc::ED(get(LOD.list2[[i]]), 1 - 0.05^0.125, type = "absolute", display = FALSE)[1])
   	}
   	## Generate prediction data for LOQ:
   	## Only get LOQ if LOQ model is determined:
-  	if(!is.na(LOQ.list[i+1])) {
+  	if(!is.na(LOQ.list[i])) {
   		newData <- data.frame(Standards = seq(1, 10000))
-  		newData$Cq.CV <- predict(get(LOQ.list[i+1]), newData)
+  		newData$Cq.CV <- predict(get(LOQ.list[[i]]), newData)
   		## Determine what type of LOQ model is used and calculate LOQ accordingly:
   		## For exponential decay:
-  		if(as.character(get(LOQ.list[i+1])$call)[1] == "stats::nls") {
+  		if(as.character(get(LOQ.list[[i]])$call)[1] == "stats::nls") {
   			## Look up lowest modelled standard below the CV threshold:
   			DAT3$LOQ[i] <- min(newData$Standards[newData$Cq.CV <= LOQ.Threshold])
   			## Unless... If the background variation exceeds the CV threshold, adjust threshold:
@@ -410,9 +427,9 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   				print(ToWrite)
   			}
   		}
-  		if(as.character(get(LOQ.list[i+1])$call)[1] == "stats::lm") {
+  		if(as.character(get(LOQ.list[[i]])$call)[1] == "stats::lm") {
   			## For polynomial:
-  			if(grepl("poly", as.character(get(LOQ.list[i+1])$call)[2]) == TRUE) {
+  			if(grepl("poly", as.character(get(LOQ.list[[i]])$call)[2]) == TRUE) {
   				## Determine the highest standard used:
   				A <- max(DAT2$Standards[DAT2$Target == Targets[i]])
   				## Adjust if the tested range does not cross below the CV threshold:
@@ -456,6 +473,8 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   		}
   	}
   }
-  out.list <- list(dataSum = DAT, standardsSum = DAT2, assaySum = DAT3)
+  out.list <- list(dataSum = DAT, standardsSum = DAT2, assaySum = DAT3,
+  								 LOQlist = LOQ.out, LODlist = LOD.out)
   return(out.list)
+
 }
