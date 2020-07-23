@@ -11,6 +11,9 @@
 #'     possible values.
 #' @param loq.fit Character string to specify method to estimate LOQ based on CV curves. Default: \code{'best'}.
 #'     Other option include \code{'decay'}, \code{'linear'} and \code{'Pn'} (see details).
+#' @param robust A logical value indicating whether the fitted model should exclude standards with less than 50\%
+#'     detections. Default = \code{FALSE}.
+#' @param ... Placeholder for further arguments that might be needed by future implementations.
 #'
 #' @details The \code{data} object contains data for at least one qPCR calibration curve
 #'    usually presented as Cq (Ct) value and corresponding copy number from from a series of serial dilutions.
@@ -95,7 +98,7 @@
 #' @importFrom stats lm nls predict coef median sd
 #' @importFrom drc drm mselect getMeanFunctions ED AR.2 AR.3 LL.2 LL.3 LL.3u LL.4 LL.5 MM.2 MM.3 W1.2 W1.3 W1.4 W2.2 W2.3 W2.4
 #'
-calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best") {
+calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best", robust = FALSE, ...) {
 
 	stopifnot(!missing(data) || class(data == "data.frame"))
 	stopifnot(class(threshold ) == "numeric")
@@ -167,20 +170,25 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   curve.list <- rep(NA, length(Targets))
   DAT$Copy.Estimate <- rep(NA, nrow(DAT))
   DAT$Mod <- rep(0, nrow(DAT))
-  for (i in seq_along(Targets)) {
+    for (i in seq_along(Targets)) {
     STDS <- data.frame(S = unique(DAT$SQ[DAT$Target == Targets[i]]), R = NA)
     ## Calculate detection rates for each standard:
     for (j in 1:nrow(STDS)) {
       STDS$R[j] <- sum(!is.na(DAT$Cq) & DAT$SQ == STDS$S[j] & DAT$Target == Targets[i], na.rm = TRUE) / sum(DAT$SQ == STDS$S[j] & DAT$Target == Targets[i], na.rm = TRUE)
     }
-    ## Only use standards with 50% or greater detection rates for linear regression:
-    if (sum(STDS$R >= 0.5, na.rm = TRUE) > 2) {
-      STDS2 <- STDS$S[STDS$R >= 0.5 & !is.na(STDS$R) & !is.na(STDS$S)]
+    if(robust == TRUE){
+    	if (sum(STDS$R >= 0.5, na.rm = TRUE) > 2) {
+    		# Only use standards with 50% or greater detection rates for linear regression: CHANGED
+    		STDS2 <- STDS$S[STDS$R >= 0.5 & !is.na(STDS$R) & !is.na(STDS$S)]
+    	}
+    	# If there are not at least 3 standards with 50% or greater detection, use the top 3: CHANGED
+    	if (sum(STDS$R >= 0.5, na.rm = TRUE) < 3) {
+    		STDS2 <- STDS$S[order(STDS$R, decreasing = TRUE)][1:3]
+    	}
+    } else {
+    	STDS2 <- STDS$S[!is.na(STDS$R) & !is.na(STDS$S)]
     }
-    ## If there are not at least 3 standards with 50% or greater detection, use the top 3:
-    if (sum(STDS$R >= 0.5, na.rm = TRUE) < 3) {
-      STDS2 <- STDS$S[order(STDS$R, decreasing = TRUE)][1:3]
-    }
+
     ## Identify the 2nd and 3rd quartiles of each used standard for inclusion in the
     ##   standard curve calculations <--------MODIFIED TO NOT FILTER BASED ON QUANTILES AS LOSING TOO MANY DATA POINTS
     for (j in seq_along(STDS2)) {
@@ -194,6 +202,7 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
     Slope <- coef(get(curve.list[i]))[2]
     DAT$Copy.Estimate[DAT$Target == Targets[i]] <- 10^((DAT$Cq[DAT$Target == Targets[i]] - Intercept) / Slope)
   }
+
 
   ## Summarize the data:
   DAT2 <- data.frame(
@@ -209,7 +218,7 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   	DAT2$Cq.mean[i] <- mean(DAT$Cq[DAT$SQ==DAT2$Standards[i]&DAT$Target==DAT2$Target[i]],na.rm=TRUE)
   	DAT2$Cq.sd[i] <- sd(DAT$Cq[DAT$SQ==DAT2$Standards[i]&DAT$Target==DAT2$Target[i]],na.rm=TRUE)
   	DAT2$Copy.CV[i] <- sd(DAT$Copy.Estimate[DAT$SQ==DAT2$Standards[i]&DAT$Target==DAT2$Target[i]],na.rm=TRUE)/mean(DAT$Copy.Estimate[DAT$SQ==DAT2$Standards[i]&DAT$Target==DAT2$Target[i]],na.rm=TRUE)
-  	DAT2$Cq.CV[i] <- sqrt(2^(DAT2$Cq.sd[i]^2*log(2))-1)
+  	DAT2$Cq.CV[i] <- sqrt(2^(DAT2$Cq.sd[i]^2*log(2))-1) # enhance to use specific E for each plate
   }
 
   ## Calculate positive detection rate for each standard and marker combination:
@@ -223,7 +232,7 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   LOQ.out <- vector(mode = "list", length = length(Targets))
   DAT3 <- data.frame(Assay = Targets, R.squared = NA, Slope = NA, Intercept = NA, Low.95 = NA,
                      LOD = NA, LOQ = NA, rep2.LOD = NA, rep3.LOD = NA, rep4.LOD = NA, rep5.LOD = NA,
-  									 rep8.LOD = NA, LOD.model = NA)
+  									 rep8.LOD = NA, Efficiency = NA, LOD.model = NA)
   LOD.FCTS <- list(LL.2(), LL.3(), LL.3u(), LL.4(), LL.5(), W1.2(), W1.3(), W1.4(), W2.2(), W2.3(),
                    W2.4(), AR.2(), AR.3(), MM.2(), MM.3())
 
@@ -390,6 +399,7 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   	DAT3$R.squared[i] <- summary(get(curve.list[i]))$r.squared
   	DAT3$Slope[i] <- coef(get(curve.list[i]))[2]
   	DAT3$Intercept[i] <- coef(get(curve.list[i]))[1]
+  	DAT3$Efficiency[i] <- 10^((-1/as.numeric(coef(get(curve.list[i]))[2])))-1
   	DAT3$Low.95[i] <- min(DAT2$Standards[DAT2$Rate >= 0.95 & DAT2$Target == Targets[i]])
   	## Only get LOD values if the LOD model is defined:
   	if(!is.na(LOD.list2[i])) {
@@ -476,5 +486,4 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   out.list <- list(dataSum = DAT, standardsSum = DAT2, assaySum = DAT3,
   								 LOQlist = LOQ.out, LODlist = LOD.out)
   return(out.list)
-
 }

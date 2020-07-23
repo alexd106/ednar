@@ -4,7 +4,7 @@
 \alias{calib_plot}
 \title{qPCR Calibration Plot}
 \usage{
-calib_plot(data, target, lod = NULL, ...)
+calib_plot(data, target, lod = NULL, robust = FALSE, ...)
 }
 \arguments{
 \item{data}{A \code{\link{tibble}} or \code{\link{data.frame}} containing calibration curve data.}
@@ -12,6 +12,9 @@ calib_plot(data, target, lod = NULL, ...)
 \item{target}{A character string containing a unique identifier for the target calibration curve to be plotted.}
 
 \item{lod}{A vector or \code{tibble} or \code{data.frame} specifying LOD and optionally LOQ values to plot.}
+
+\item{robust}{A logical value indicating whether the fitted model should exclude standards with less than 50\%
+detections. Default = \code{FALSE}.}
 
 \item{...}{Placeholder for further arguments that might be needed by future implementations.}
 }
@@ -51,8 +54,9 @@ calib_plot(calib_data, target = "706", lod = lod_data)
 lod_data <- c(1.5, 4.3)
 calib_plot(calib_data, target = "706", lod = lod_data)
 
-# loq missing
+# loq missing and robust = TRUE
 lod_data <- tibble(Target = "706", lod = 1.5)
-calib_plot(calib_data, target = "706", lod = lod_data)
+calib_plot(calib_data, target = "706", lod = lod_data, robust = TRUE)
 }
+
 }

@@ -46,7 +46,7 @@ Copy number values in \code{calib_df} should not be log transformed prior to usi
 }
 \examples{
 \dontrun{
-my_pred <- predictCN(calib_df = calib_data, ct_df = field_data)
+my_pred <- calib_predict(calib_df = calib_data, ct_df = field_data)
 }
 }
 \references{

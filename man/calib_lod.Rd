@@ -4,7 +4,14 @@
 \alias{calib_lod}
 \title{Calculate Model Based LOD and LOQ for qPCR eDNA Assays}
 \usage{
-calib_lod(data, threshold = 0.35, lod.fit = "best", loq.fit = "best")
+calib_lod(
+  data,
+  threshold = 0.35,
+  lod.fit = "best",
+  loq.fit = "best",
+  robust = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{A \code{\link{data.frame}} or \code{\link{tibble}} object containing calibration curve data.}
@@ -17,6 +24,11 @@ possible values.}
 
 \item{loq.fit}{Character string to specify method to estimate LOQ based on CV curves. Default: \code{'best'}.
 Other option include \code{'decay'}, \code{'linear'} and \code{'Pn'} (see details).}
+
+\item{robust}{A logical value indicating whether the fitted model should exclude standards with less than 50\%
+detections. Default = \code{FALSE}.}
+
+\item{...}{Placeholder for further arguments that might be needed by future implementations.}
 }
 \value{
 A \code{\link{list}} object containing the following objects:

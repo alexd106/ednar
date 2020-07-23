@@ -121,7 +121,14 @@
     by Merkes et al. (see references).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calib_lod</span>(<span class='no'>data</span>, <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.35</span>, <span class='kw'>lod.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>, <span class='kw'>loq.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>)</pre>
+    <pre class="usage"><span class='fu'>calib_lod</span>(
+  <span class='no'>data</span>,
+  <span class='kw'>threshold</span> <span class='kw'>=</span> <span class='fl'>0.35</span>,
+  <span class='kw'>lod.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>,
+  <span class='kw'>loq.fit</span> <span class='kw'>=</span> <span class='st'>"best"</span>,
+  <span class='kw'>robust</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,6 +151,15 @@ possible values.</p></td>
       <th>loq.fit</th>
       <td><p>Character string to specify method to estimate LOQ based on CV curves. Default: <code>'best'</code>.
 Other option include <code>'decay'</code>, <code>'linear'</code> and <code>'Pn'</code> (see details).</p></td>
+    </tr>
+    <tr>
+      <th>robust</th>
+      <td><p>A logical value indicating whether the fitted model should exclude standards with less than 50%
+detections. Default = <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Placeholder for further arguments that might be needed by future implementations.</p></td>
     </tr>
     </table>
 

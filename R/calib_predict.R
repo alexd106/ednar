@@ -42,7 +42,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' my_pred <- predictCN(calib_df = calib_data, ct_df = field_data)
+#' my_pred <- calib_predict(calib_df = calib_data, ct_df = field_data)
 #' }
 calib_predict <- function(calib_df, ct_df, ...){
 	# check correct arguments supplied

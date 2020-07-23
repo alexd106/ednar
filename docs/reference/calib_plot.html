@@ -117,7 +117,7 @@
     <p>Create qPCR calibation plots.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calib_plot</span>(<span class='no'>data</span>, <span class='no'>target</span>, <span class='kw'>lod</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>calib_plot</span>(<span class='no'>data</span>, <span class='no'>target</span>, <span class='kw'>lod</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>robust</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -133,6 +133,11 @@
     <tr>
       <th>lod</th>
       <td><p>A vector or <code>tibble</code> or <code>data.frame</code> specifying LOD and optionally LOQ values to plot.</p></td>
+    </tr>
+    <tr>
+      <th>robust</th>
+      <td><p>A logical value indicating whether the fitted model should exclude standards with less than 50%
+detections. Default = <code>FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -171,9 +176,9 @@
 <span class='no'>lod_data</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1.5</span>, <span class='fl'>4.3</span>)
 <span class='fu'>calib_plot</span>(<span class='no'>calib_data</span>, <span class='kw'>target</span> <span class='kw'>=</span> <span class='st'>"706"</span>, <span class='kw'>lod</span> <span class='kw'>=</span> <span class='no'>lod_data</span>)
 
-<span class='co'># loq missing</span>
+<span class='co'># loq missing and robust = TRUE</span>
 <span class='no'>lod_data</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span>(<span class='kw'>Target</span> <span class='kw'>=</span> <span class='st'>"706"</span>, <span class='kw'>lod</span> <span class='kw'>=</span> <span class='fl'>1.5</span>)
-<span class='fu'>calib_plot</span>(<span class='no'>calib_data</span>, <span class='kw'>target</span> <span class='kw'>=</span> <span class='st'>"706"</span>, <span class='kw'>lod</span> <span class='kw'>=</span> <span class='no'>lod_data</span>)
+<span class='fu'>calib_plot</span>(<span class='no'>calib_data</span>, <span class='kw'>target</span> <span class='kw'>=</span> <span class='st'>"706"</span>, <span class='kw'>lod</span> <span class='kw'>=</span> <span class='no'>lod_data</span>, <span class='kw'>robust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
