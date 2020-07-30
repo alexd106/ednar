@@ -51,30 +51,31 @@ calib_predict <- function(calib_df, ct_df, ...){
 
 	calib <- calib_df
 	dataf <- ct_df
-  calib$Target <- as.character(calib$Target)
-  dataf$calib.curve <- as.character(dataf$calib.curve)
 
 	# check columns names supplied
 	if(!any(colnames(calib) == "Target")) {
-		stop(paste0(calib_df, " does not contain Targets column."))
+		stop(paste0("calib_df input does not contain a Targets column."))
 	}
 	if(!any(colnames(calib) == "Cq")) {
-		stop(paste0(calib_df, " does not contain Cq column."))
+		stop(paste0("calib_df does not contain a Cq column."))
 	}
 	if(!any(colnames(calib) == "SQ")) {
-		stop(paste0(calib_df, " does not contain SQ column."))
+		stop(paste0("calib_df does not contain a SQ column."))
 	}
 	if(!any(colnames(dataf) == "calib.curve")) {
-		stop(paste0(ct_df, " does not contain calib.curve column."))
+		stop(paste0("ct_df does not contain a calib.curve column."))
 	}
 	if(!any(colnames(dataf) == "Ct.value")) {
-		stop(paste0(ct_df, " does not contain Ct.value column."))
+		stop(paste0("ct_df does not contain a Ct.value column."))
 	}
+
+	calib$Target <- as.character(calib$Target)
+	dataf$calib.curve <- as.character(dataf$calib.curve)
 
 	# check if ct_df calib.curve column contains at
 	# least one identifier in calib_df Targets
 	if(sum(unique(dataf$calib.curve) %in% unique(calib$Target)) == 0) {
-		stop(paste0("no Target identifiers in ", ct_df, " found in ", calib_df))
+		stop(paste0("no Target identifiers in ct_df found in calib_df"))
 	}
   calib.targets <- unique(calib$Target)
   dataf.targets <- unique(dataf$calib.curve)
@@ -83,7 +84,7 @@ calib_predict <- function(calib_df, ct_df, ...){
   in.idx <- dataf.targets[dataf.targets %in% calib.targets]
   out.idx <- dataf.targets[!(dataf.targets %in% calib.targets)]
   if(length(out.idx) > 0){
-  	print(paste0("The following calibration curve identifiers were found in ", ct_df, " but not in ", calib_df, " and will be ignored: "))
+  	print(paste0("The following calibration curve identifiers were found in ct_df but not in calib_df and will be ignored: "))
   	print(out.idx)
   }
 	mod.list <- list(0)
