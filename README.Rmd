@@ -7,9 +7,9 @@ output: github_document
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
+  comment = "#",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "70%"
 )
 ```
 
@@ -31,11 +31,88 @@ You can install the development version from [GitHub](https://github.com/) with:
 # install.packages("remotes")
 remotes::install_github("alexd106/ednar")
 ```
-## Example
+## Example usage
 
-This is a basic example which shows you how to solve a common problem:
+### Plotting standard curves
 
-```{r example}
+To plot a basic qPCR standard curve for a specified target: 
+
+```{r calib_plot1, warning=FALSE, message=FALSE, fig.align='center'}
 library(ednar)
-## basic example code
+calib_plot(calib_data, target = "706")
+```
+
+To include the the limit of detection (LOD) and optionally the limit of quantification (LOQ) (usually obtained using the `calib_lod()` function) on the plot use the `lod =` argument. LODs and LOQs can be supplied as either a `data.frame` object or as a vector.  
+
+```{r calib_plot2, warning=FALSE, message=FALSE, fig.align='center'}
+# LOD as a vector
+lod_vec <- 1.5
+calib_plot(calib_data, target = "706", lod = lod_vec)
+```
+
+
+```{r calib_plot3, warning=FALSE, message=FALSE, fig.align='center'}
+# LOD and LOQ as a vector
+lod_vec <- c(1.5, 4.1)
+calib_plot(calib_data, target = "706", lod = lod_vec)
+```
+
+
+```{r calib_plot4, warning=FALSE, message=FALSE, fig.align='center'}
+# LOD and LOQ as a tibble
+library(tibble)
+lod_data <- tibble(Target = "706", lod = 1.5, loq = 4.3)
+calib_plot(calib_data, target = "706", lod = lod_data)
+```
+
+The `robust = TRUE` argument will exclude standards with less than 50% detections when fitting the linear model
+
+```{r calib_plot5, warning=FALSE, message=FALSE, fig.align='center'}
+# LOD and LOQ as a tibble and robust = TRUE
+library(tibble)
+lod_data <- tibble(Target = "706", lod = 12.5, loq = 16.3)
+calib_plot(calib_data, target = "706", lod = lod_data, robust = TRUE)
+```
+
+### Summary statistics from standard curve data
+
+To generate a table of summary statistics (slope and intercept estimates, test statistics etc) using standard curve data for each 'Target' we can use the `calib_stats()` function with the argument `type = "effects"`. 
+
+```{r calib_stats1, warning=FALSE, message=FALSE, collapse=TRUE}
+sum_stats <- calib_stats(calib_data, type = "effects")
+sum_stats
+```
+
+To obtain the *R^2* estimates use `type = "r2"`
+
+```{r calib_stats2, warning=FALSE, message=FALSE, collapse=TRUE}
+sum_stats <- calib_stats(calib_data, type = "r2")
+sum_stats
+```
+
+### Estimate LOD and LOQ from standard curve data
+
+To obtain model based estimates of LOD and LOQ from the standard curve data from each 'Target' we can use the `calib_lod()` function. The `calib_lod()` function can automatically determine the 'best' model for LOQ by fitting linear, exponential decay, and up to 6^th order polynomial models and selecting the model with the lowest residual standard error. LOD estimates are obtained by fitting a series of dose response models using the `drc` package (see the `drc::getMeanFunctions()` function to see all possible models) and selecting the 'best' model based on log likelihood values, Akaike's information criterion and residual variance.  
+
+```{r calib_lod1, warning=FALSE, message=FALSE, collapse=TRUE}
+qpcr_lod <- calib_lod(data = calib_data, threshold = 0.35,
+              lod.fit = "best", loq.fit = "best")
+```
+
+To display a summary of the LOD and LOQ estimates for each 'Target' 
+
+```{r calib_lod2, warning=FALSE, message=FALSE, collapse=TRUE}
+qpcr_lod$assaySum
+```
+
+To display a summary for each of the standards and Targets
+
+```{r calib_lod3, warning=FALSE, message=FALSE, collapse=TRUE}
+qpcr_lod$standardsSum
+```
+
+With the `calib_lod()` function you can also fit specific models for both LOD and LOQ estimation. For example to estimate LOQ using an exponential decay model and LOD with a 4 parameter Weibull type II model. 
+```{r calib_lod4, warning=FALSE, message=FALSE, collapse=TRUE}
+qpcr_lod <- calib_lod(data = calib_data, threshold = 0.35,
+              lod.fit = "W2.4", loq.fit = "decay")
 ```
