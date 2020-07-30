@@ -82,7 +82,7 @@ calib_predict <- function(calib_df, ct_df, ...){
   # are in calib_df Target
   in.idx <- dataf.targets[dataf.targets %in% calib.targets]
   out.idx <- dataf.targets[!(dataf.targets %in% calib.targets)]
-  if(length(out.idx) != 0){
+  if(length(out.idx) > 0){
   	print(paste0("The following calibration curve identifiers were found in ", ct_df, " but not in ", calib_df, " and will be ignored: "))
   	print(out.idx)
   }
