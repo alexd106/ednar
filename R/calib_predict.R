@@ -49,24 +49,27 @@ calib_predict <- function(calib_df, ct_df, ...){
 	stopifnot(!missing(calib_df) || class(calib_df) == "data.frame")
 	stopifnot(!missing(ct_df) || class(ct_df) == "data.frame")
 
+	calib_df_name <- deparse(substitute(calib_df))
+	ct_df_name <- deparse(substitute(ct_df))
+
 	calib <- calib_df
 	dataf <- ct_df
 
 	# check columns names supplied
 	if(!any(colnames(calib) == "Target")) {
-		stop(paste0("calib_df input does not contain a Targets column."))
+		stop(paste0("can't find column `Targets` in ", calib_df_name, "."))
 	}
 	if(!any(colnames(calib) == "Cq")) {
-		stop(paste0("calib_df does not contain a Cq column."))
+		stop(paste0("can't find column `Cq` in ", calib_df_name, "."))
 	}
 	if(!any(colnames(calib) == "SQ")) {
-		stop(paste0("calib_df does not contain a SQ column."))
+		stop(paste0("can't find column `Cq` in ", calib_df_name, "."))
 	}
 	if(!any(colnames(dataf) == "calib.curve")) {
-		stop(paste0("ct_df does not contain a calib.curve column."))
+		stop(paste0("can't find column `calib.curve` in ", ct_df_name, "."))
 	}
 	if(!any(colnames(dataf) == "Ct.value")) {
-		stop(paste0("ct_df does not contain a Ct.value column."))
+		stop(paste0("can't find column `Ct.value` in ", ct_df_name, "."))
 	}
 
 	calib$Target <- as.character(calib$Target)
@@ -75,7 +78,7 @@ calib_predict <- function(calib_df, ct_df, ...){
 	# check if ct_df calib.curve column contains at
 	# least one identifier in calib_df Targets
 	if(sum(unique(dataf$calib.curve) %in% unique(calib$Target)) == 0) {
-		stop(paste0("no Target identifiers in ct_df found in calib_df"))
+		stop(paste0("no `calib.curve` identifiers in ", ct_df_name, " found in `Targets` ", calib_df_name, "."))
 	}
   calib.targets <- unique(calib$Target)
   dataf.targets <- unique(dataf$calib.curve)
@@ -84,7 +87,7 @@ calib_predict <- function(calib_df, ct_df, ...){
   in.idx <- dataf.targets[dataf.targets %in% calib.targets]
   out.idx <- dataf.targets[!(dataf.targets %in% calib.targets)]
   if(length(out.idx) > 0){
-  	print(paste0("The following calibration curve identifiers were found in ct_df but not in calib_df and will be ignored: "))
+  	print(paste0("The following calibration curve identifiers were found in ", ct_df_name, " but not in ", calib_df_name, " and will be ignored: "))
   	print(out.idx)
   }
 	mod.list <- list(0)
