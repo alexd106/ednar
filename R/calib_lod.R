@@ -165,8 +165,6 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   print(DAT[OUT.ROW2,])
   }
 
-  ## Generate standard curves using all data and calculate copy estimates for each
-  ## replicate using the curves:
   curve.list <- rep(NA, length(Targets))
   DAT$Copy.Estimate <- rep(NA, nrow(DAT))
   DAT$Mod <- rep(0, nrow(DAT))
@@ -178,10 +176,10 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
     }
     if(robust == TRUE){
     	if (sum(STDS$R >= 0.5, na.rm = TRUE) > 2) {
-    		# Only use standards with 50% or greater detection rates for linear regression: CHANGED
+    		# Only use standards with 50% or greater detection rates for linear regression
     		STDS2 <- STDS$S[STDS$R >= 0.5 & !is.na(STDS$R) & !is.na(STDS$S)]
     	}
-    	# If there are not at least 3 standards with 50% or greater detection, use the top 3: CHANGED
+    	# If there isn't at least 3 standards with 50% or greater detection, use the top 3
     	if (sum(STDS$R >= 0.5, na.rm = TRUE) < 3) {
     		STDS2 <- STDS$S[order(STDS$R, decreasing = TRUE)][1:3]
     	}
@@ -189,12 +187,11 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
     	STDS2 <- STDS$S[!is.na(STDS$R) & !is.na(STDS$S)]
     }
 
-    ## Identify the 2nd and 3rd quartiles of each used standard for inclusion in the
-    ##   standard curve calculations <--------MODIFIED TO NOT FILTER BASED ON QUANTILES AS LOSING TOO MANY DATA POINTS
+    # fit lm's
     for (j in seq_along(STDS2)) {
       ind.cq <- DAT$Cq[DAT$Target == Targets[i] & DAT$SQ == STDS2[j]]
-      # DAT$Mod[DAT$Target==Targets[i]&DAT$SQ==STDS2[j]&DAT$Cq>=quantile(ind.cq,na.rm=TRUE)[2]&DAT$Cq<=quantile(ind.cq,na.rm=TRUE)[4]&!is.na(DAT$SQ)] <- 1
-      DAT$Mod[DAT$Target == Targets[i] & DAT$SQ == STDS2[j] & !is.na(DAT$Cq) & !is.na(DAT$SQ)] <- 1 # no removal based on quantile
+
+      DAT$Mod[DAT$Target == Targets[i] & DAT$SQ == STDS2[j] & !is.na(DAT$Cq) & !is.na(DAT$SQ)] <- 1
     }
     assign(paste0("curve", i), stats::lm(Cq ~ log10(SQ), data = DAT[DAT$Target == Targets[i] & DAT$Mod == 1, ]))
     curve.list[i] <- paste0("curve", i)
@@ -203,8 +200,7 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
     DAT$Copy.Estimate[DAT$Target == Targets[i]] <- 10^((DAT$Cq[DAT$Target == Targets[i]] - Intercept) / Slope)
   }
 
-
-  ## Summarize the data:
+  ## Summarise the data:
   DAT2 <- data.frame(
   Standards = Standards, Target = Target, Reps = NA, Detects = NA, Cq.mean = NA,
   Cq.sd = NA, Copy.CV = NA, Cq.CV = NA)
