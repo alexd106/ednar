@@ -90,6 +90,8 @@ calib_plot <- function(data, target, lod = NULL, robust = FALSE, ...){
         geom_red() +
         scale_x_continuous(trans = 'log10') +
         geom_vline(xintercept = lod[1], color = "black", size = 0.7) +
+        annotate("text",y = min(DAT$Cq, na.rm = TRUE) * 1.1,
+                 x = lod * 0.8, angle = 90,label = "LOD") +
         ggtitle(paste0("Target: ", target)) +
         xlab(expression(standard~concentrations~(copies~reaction^{-1}))) +
         ylab("Cq - value") +
@@ -102,6 +104,10 @@ calib_plot <- function(data, target, lod = NULL, robust = FALSE, ...){
         scale_x_continuous(trans = 'log10') +
       	geom_vline(xintercept = lod[1], color = "black", size = 0.7) +
       	geom_vline(xintercept = lod[2], color = "black", linetype = "dashed", size = 0.7) +
+        annotate("text",y = min(DAT$Cq, na.rm = TRUE) * 1.1,
+                 x = lod[1] * 0.8, angle = 90,label = "LOD") +
+        annotate("text",y = min(DAT$Cq, na.rm = TRUE) * 1.1,
+                 x = lod[2] * 0.8, angle = 90,label = "LOQ") +
         ggtitle(paste0("Target: ", target)) +
       	xlab(expression(standard~concentrations~(copies~reaction^{-1}))) +
       	ylab("Cq - value") +
@@ -120,6 +126,10 @@ calib_plot <- function(data, target, lod = NULL, robust = FALSE, ...){
           scale_x_continuous(trans = 'log10') +
           geom_vline(xintercept = lod.tmp, color = "black", size = 0.7) +
           geom_vline(xintercept = loq.tmp, color = "black", linetype = "dashed", size = 0.7) +
+          annotate("text",y = min(DAT$Cq, na.rm = TRUE) * 1.1,
+                   x = lod.tmp * 0.8, angle = 90,label = "LOD") +
+          annotate("text",y = min(DAT$Cq, na.rm = TRUE) * 1.1,
+                   x = loq.tmp * 0.8, angle = 90,label = "LOQ") +
           ggtitle(paste0("Target: ", target)) +
           xlab(expression(standard~concentrations~(copies~reaction^{-1}))) +
           ylab("Cq - value") +
@@ -133,6 +143,8 @@ calib_plot <- function(data, target, lod = NULL, robust = FALSE, ...){
           geom_red() +
           scale_x_continuous(trans = 'log10') +
           geom_vline(xintercept = lod.tmp, color = "black", size = 0.7) +
+          annotate("text",y = min(DAT$Cq, na.rm = TRUE) * 1.1,
+                   x = lod.tmp * 0.8, angle = 90,label = "LOD") +
           ggtitle(paste0("Target: ", target)) +
           xlab(expression(standard~concentrations~(copies~reaction^{-1}))) +
           ylab("Cq - value") +
