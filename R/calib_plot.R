@@ -1,7 +1,6 @@
-
 #' @title qPCR Calibration Plot
 #'
-#' @description Create qPCR calibation plots.
+#' @description Create qPCR calibration plots.
 #'
 #' @param data A \code{\link{tibble}} or \code{\link{data.frame}} containing calibration curve data.
 #' @param target A character string containing a unique identifier for the target calibration curve to be plotted.
@@ -77,9 +76,9 @@ calib_plot <- function(data, target, lod = NULL, robust = FALSE, ...){
   geom_red <- function(...){
     list(
       if(robust == TRUE)
-        geom_smooth(data = subset(DAT, Mod == 1), method = "lm", se = FALSE, colour = "black"),
+        geom_smooth(data = subset(DAT, Mod == 1), method = "lm", se = FALSE, colour = "black", na.rm = TRUE),
       if(robust == FALSE)
-        geom_smooth(method = "lm", se = FALSE, colour = "black")
+        geom_smooth(method = "lm", se = FALSE, colour = "black", na.rm = TRUE)
     )
   }
 

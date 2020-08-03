@@ -22,7 +22,7 @@ detections. Default = \code{FALSE}.}
 A \code{\link{ggplot2}} object
 }
 \description{
-Create qPCR calibation plots.
+Create qPCR calibration plots.
 }
 \details{
 The \code{data} object contains data for at least one qPCR calibration curve
