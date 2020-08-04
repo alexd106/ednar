@@ -219,7 +219,8 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
 
   ## Calculate positive detection rate for each standard and marker combination:
   DAT2$Rate <- DAT2$Detects/DAT2$Reps
-  ## Determine LoD and LoQ by modeling, and summarize each assay:
+
+  ## Determine LOD and LOQ by modelling, and summarise each assay:
   DAT$Detect <- as.numeric(!is.na(DAT$Cq))
   LOD.list2 <- vector(mode = "list", length = length(Targets))
   LOD.list3 <- vector(mode = "list", length = length(Targets))
@@ -349,8 +350,8 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   	## Define the logarithmic model for LOD using user-selected function:
   	if(is.list(LOD.FCT) == TRUE) {
   		tryCatch({ #skip if model cannot be determined.
-  			assign(paste0("LOD.mod2", i), drc::drm(Detect ~ SQ, data = DAT[DAT$Target == Targets[i], ], fct = LOD.FCT))
-  			LOD.list2[[i]] <- paste0("LOD.mod2", i)
+  			assign(paste0("LOD.", Targets[i]), drc::drm(Detect ~ SQ, data = DAT[DAT$Target == Targets[i], ], fct = LOD.FCT))
+  			LOD.list2[[i]] <- paste0("LOD.", Targets[i])
   			LOD.list3[[i]] <- LOD.FCT$name
   		}, error = function(e) {
   			e
@@ -368,8 +369,8 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   				## Test all available models and select the best one:
   				LOD.FCT2 <- suppressWarnings(row.names(drc::mselect(LOD.mod, LOD.FCTS))[1])
   				LOD.FCT3 <- drc::getMeanFunctions(fname = LOD.FCT2)
-  				assign(paste0("LOD.mod2", i), drc::drm(Detect ~ SQ, data = DAT[DAT$Target == Targets[i], ], fct = LOD.FCT3[[1]]))
-  				LOD.list2[[i]] <- paste0("LOD.mod2", i)
+  				assign(paste0("LOD.", Targets[i]), drc::drm(Detect ~ SQ, data = DAT[DAT$Target == Targets[i], ], fct = LOD.FCT3[[1]]))
+  				LOD.list2[[i]] <- paste0("LOD.", Targets[i])
   				LOD.list3[[i]] <- LOD.FCT2
   			}, error = function(e) {
   				e
