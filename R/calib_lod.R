@@ -34,7 +34,7 @@
 #'    \code{loq.fit = "P2"} will fit a 2nd-order polynomial model and \code{loq.fit = "P3"} will use a 3rd-order.
 #'    Selecting "best" will test polynomial models up to 6th-order.
 #'
-#' @return A \code{\link{list}} object containing the following objects:
+#' @return A \code{lod} class object containing the following objects:
 #'
 #' \code{dataSum}: A summary \code{data.frame} of the original qPCR calibration data including copy number estimate (\code{Copy.Estimate}).
 #'
@@ -482,5 +482,6 @@ calib_lod <- function(data, threshold = 0.35, lod.fit = "best", loq.fit = "best"
   }
   out.list <- list(dataSum = DAT, standardsSum = DAT2, assaySum = DAT3,
   								 LOQlist = LOQ.out, LODlist = LOD.out)
+  class(out.list) <- "lod"
   return(out.list)
 }

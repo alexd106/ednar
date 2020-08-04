@@ -31,7 +31,7 @@ detections. Default = \code{FALSE}.}
 \item{...}{Placeholder for further arguments that might be needed by future implementations.}
 }
 \value{
-A \code{\link{list}} object containing the following objects:
+A \code{lod} class object containing the following objects:
 
 \code{dataSum}: A summary \code{data.frame} of the original qPCR calibration data including copy number estimate (\code{Copy.Estimate}).
 
