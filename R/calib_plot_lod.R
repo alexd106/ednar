@@ -1,11 +1,12 @@
-#' @title Create a LOD Plot
+#' @title LOD Plot
 #'
-#' @description The LOD plot shows the relative detection rates for each standard as well as the LOD model curve.
-#'     This code has been modified and functionalised from the original
+#' @description Creates a LOD plot for a specified 'Target'. The LOD plot shows the relative detection rates for
+#'     each standard as well as the LOD model curve. This code has been modified and functionalised from the original
 #'     by Merkes et al. (see references).
 #'
-#' @param calib_obj A \code{lod} \code{list} object containing the output from the  \code{\link{calib_lod}} function.
+#' @param lod_obj A \code{lod} object containing the output from the  \code{\link{calib_lod}} function.
 #' @param target A character string containing a unique identifier for the target calibration curve to be plotted.
+#' @param legend A logical indicating whether a lengen should be included on the plot, Default: \code{TRUE}.
 #' @param ... Placeholder for further arguments that might be needed by future implementations.
 #'
 #' @details The LOD plot shows the relative detection rates for each standard as well as the LOD model curve.
@@ -13,7 +14,8 @@
 #'     multiple replicates are displayed. The logarithmic function that was used to determine the LODs is
 #'     shown in the plot subtitle along with the p‐value for a lack of fit test on the model.
 #'
-#' @return A LOD plot in the current plotting device.
+#' @return A LOD plot in the current plotting device and a \code{\link{data.frame}} containing the
+#'     effective LOD estimates, standard errors, upper and lower confidence intervals for each replicate.
 #'
 #' @references Merkes CM, Klymus KE, Allison MJ, Goldberg C, Helbing CC, Hunter ME, Jackson CA, Lance RF,
 #'     Mangan AM, Monroe EM, Piaggio AJ, Stokdyk JP, Wilson CC, Richter C. (2019) Generic qPCR Limit of
@@ -35,18 +37,25 @@
 #' \dontrun{
 #' qpcr_lod <- calib_lod(data = calib_data, threshold = 0.35,
 #'               lod.fit = "best", loq.fit = "best")
-#' calib_plot_lod(calib_data, target = "706")
+#' lod_CI <- calib_plot_lod(lod_obj = qpcr_lod, target = "10720201")
+#' lod_CI
 #'}
 #'
-calib_plot_lod <- function(calib_obj, target, ...) {
+calib_plot_lod <- function(lod_obj, target, legend = TRUE, ...) {
 
-	stopifnot(!missing(calib_obj)) #add edna object later
-	stopifnot(!missing(target) || class(target == "character"))
+	stopifnot(!missing(lod_obj))
+	stopifnot(!missing(target))
 
-	calib_obj_name <- deparse(substitute(calib_obj))
+	calib_obj_name <- deparse(substitute(lod_obj))
 	target_name <- deparse(substitute(target))
 
-	data_obj <- calib_obj
+	if(class(lod_obj) != "lod"){
+		stop(paste0(calib_obj_name, " must be class 'lod'."))
+	}
+  if(class(target) != "character"){
+  	stop(paste0(target_name, " must be class 'character'."))
+  }
+	data_obj <- lod_obj
 
 	if(sum(grepl(paste0("\\b", target, "\\b"), names(data_obj$LODlist))) == 0) {
 		stop(paste0("no target name: ", target_name, " found in ", calib_obj_name))
@@ -103,10 +112,13 @@ calib_plot_lod <- function(calib_obj, target, ...) {
       lines(x = rep(DAT4[j, 3], 2), y = c(YS[j] - 0.02, YS[j] + 0.02), lwd = 2, col = COLS[j])
       lines(x = rep(DAT4[j, 4], 2), y = c(YS[j] - 0.02, YS[j] + 0.02), lwd = 2, col = COLS[j])
     }
+    if(legend == TRUE){
     legend("bottomright", legend = LODS2, pch = PNTS, col = COLS, text.col = COLS)
+    }
     Pval <- drc::modelFit(mod_obj[[1]])[[5]][2]
     mtext(paste0("FCT used: ", mod_obj[[1]]$fct$name, "    Lack of fit test: p = ", round(Pval, digits = 4)), side = 3)
   }
+  return(LOD.CI)
   if (is.na(names(mod_obj))) {
     plot(data_obj$standardsSum$Rate[data_obj$standardsSum$Target == target] ~ log10(data_obj$standardsSum$Standards[data_obj$standardsSum$Target == target]),
       ylim = c(0, 1), ylab = "Detection Probability",

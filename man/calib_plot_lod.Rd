@@ -2,23 +2,26 @@
 % Please edit documentation in R/calib_plot_lod.R
 \name{calib_plot_lod}
 \alias{calib_plot_lod}
-\title{Create a LOD Plot}
+\title{LOD Plot}
 \usage{
-calib_plot_lod(calib_obj, target, ...)
+calib_plot_lod(lod_obj, target, legend = TRUE, ...)
 }
 \arguments{
-\item{calib_obj}{A \code{lod} \code{list} object containing the output from the  \code{\link{calib_lod}} function.}
+\item{lod_obj}{A \code{lod} object containing the output from the  \code{\link{calib_lod}} function.}
 
 \item{target}{A character string containing a unique identifier for the target calibration curve to be plotted.}
+
+\item{legend}{A logical indicating whether a lengen should be included on the plot, Default: \code{TRUE}.}
 
 \item{...}{Placeholder for further arguments that might be needed by future implementations.}
 }
 \value{
-A LOD plot in the current plotting device.
+A LOD plot in the current plotting device and a \code{\link{data.frame}} containing the
+    effective LOD estimates, standard errors, upper and lower confidence intervals for each replicate.
 }
 \description{
-The LOD plot shows the relative detection rates for each standard as well as the LOD model curve.
-    This code has been modified and functionalised from the original
+Creates a LOD plot for a specified 'Target'. The LOD plot shows the relative detection rates for
+    each standard as well as the LOD model curve. This code has been modified and functionalised from the original
     by Merkes et al. (see references).
 }
 \details{
@@ -31,7 +34,8 @@ The LOD plot shows the relative detection rates for each standard as well as the
 \dontrun{
 qpcr_lod <- calib_lod(data = calib_data, threshold = 0.35,
               lod.fit = "best", loq.fit = "best")
-calib_plot_lod(calib_data, target = "706")
+lod_CI <- calib_plot_lod(lod_obj = qpcr_lod, target = "10720201")
+lod_CI
 }
 
 }
