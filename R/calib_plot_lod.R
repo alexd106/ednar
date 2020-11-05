@@ -49,12 +49,15 @@ calib_plot_lod <- function(lod_obj, target, legend = TRUE, ...) {
 	calib_obj_name <- deparse(substitute(lod_obj))
 	target_name <- deparse(substitute(target))
 
-	if(class(lod_obj) != "lod"){
-		stop(paste0(calib_obj_name, " must be class 'lod'."))
+	## make sure fit is a lod object
+	if(!inherits(lod_obj, "lod")){
+		stop(paste(calib_obj_name, "is not an lod object"))
 	}
+
   if(class(target) != "character"){
   	stop(paste0(target_name, " must be class 'character'."))
   }
+
 	data_obj <- lod_obj
 
 	if(sum(grepl(paste0("\\b", target, "\\b"), names(data_obj$LODlist))) == 0) {
@@ -118,7 +121,6 @@ calib_plot_lod <- function(lod_obj, target, legend = TRUE, ...) {
     Pval <- drc::modelFit(mod_obj[[1]])[[5]][2]
     mtext(paste0("FCT used: ", mod_obj[[1]]$fct$name, "    Lack of fit test: p = ", round(Pval, digits = 4)), side = 3)
   }
-  return(LOD.CI)
   if (is.na(names(mod_obj))) {
     plot(data_obj$standardsSum$Rate[data_obj$standardsSum$Target == target] ~ log10(data_obj$standardsSum$Standards[data_obj$standardsSum$Target == target]),
       ylim = c(0, 1), ylab = "Detection Probability",
@@ -126,4 +128,5 @@ calib_plot_lod <- function(lod_obj, target, legend = TRUE, ...) {
       main = paste0("LoD for: ", target, " unsolvable")
     )
   }
+  invisible(LOD.CI)
 }
