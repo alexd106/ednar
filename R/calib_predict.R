@@ -60,16 +60,16 @@ calib_predict <- function(calib_df, ct_df, ...){
 		stop(paste0("can't find column `Target` in ", calib_df_name, "."))
 	}
 	if(!any(colnames(calib) == "Cq")) {
-		stop(paste0("can't find column `Cq` in ", calib_df_name, "."))
+		stop(paste0("can't find variable `Cq` in ", calib_df_name, "."))
 	}
 	if(!any(colnames(calib) == "SQ")) {
-		stop(paste0("can't find column `SQ` in ", calib_df_name, "."))
+		stop(paste0("can't find variable `SQ` in ", calib_df_name, "."))
 	}
 	if(!any(colnames(dataf) == "calib.curve")) {
-		stop(paste0("can't find column `calib.curve` in ", ct_df_name, "."))
+		stop(paste0("can't find variable `calib.curve` in ", ct_df_name, "."))
 	}
 	if(!any(colnames(dataf) == "Ct.value")) {
-		stop(paste0("can't find column `Ct.value` in ", ct_df_name, "."))
+		stop(paste0("can't find variable `Ct.value` in ", ct_df_name, "."))
 	}
 
 	calib$Target <- as.character(calib$Target)

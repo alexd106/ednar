@@ -58,13 +58,13 @@ calib_plot <- function(data, target, lod = NULL, robust = FALSE, ...){
 
   # check columns names supplied correctly
   if(!any(colnames(data) == "Target")) {
-    stop(paste0("can't find column `Target` in ", calib_df_name, "."))
+    stop(paste0("can't find variable `Target` in ", calib_df_name, "."))
   }
   if(!any(colnames(data) == "Cq")) {
-    stop(paste0("can't find column `Cq` in ", calib_df_name, "."))
+    stop(paste0("can't find variable `Cq` in ", calib_df_name, "."))
   }
   if(!any(colnames(data) == "SQ")) {
-    stop(paste0("can't find column `SQ` in ", calib_df_name, "."))
+    stop(paste0("can't find variable `SQ` in ", calib_df_name, "."))
   }
 
   # flag data points with less than 50% detections for each standard
