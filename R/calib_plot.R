@@ -1,8 +1,8 @@
 #' @title qPCR Calibration Plot
 #'
-#' @description Create qPCR calibration plots.
+#' @description Create a qPCR calibration plot.
 #'
-#' @param data A \code{\link{tibble}} or \code{\link{data.frame}} containing calibration curve data.
+#' @param data A \code{\link{tibble}} or \code{\link{data.frame}} containing calibration curve data (see \code{details}).
 #' @param target A character string containing a unique identifier for the target calibration curve to be plotted.
 #' @param lod A vector or \code{tibble} or \code{data.frame} specifying LOD and optionally LOQ values to plot.
 #' @param robust A logical value indicating whether the fitted model should exclude standards with less than 50\%
@@ -18,10 +18,10 @@
 #'    The \code{target} argument takes a single character string specifying the target calibration curve
 #'    to plot.
 #'
-#'    The \code{lod} argument can be supplied as a vector or as a \code{data.frame} or \code{tibble}. If
+#'    The optional \code{lod} argument can be supplied as a vector or as a \code{data.frame} or \code{tibble}. If
 #'    supplied as a vector then a single LOD value or optionally an LOD and LOQ value can be included. If both LOD
 #'    and LOQ values are specified then LOD much be supplied first in the vector (i.e. \code{c(1.5, 4.1)}).
-#'    If supplied as a \code{data.frame} or \code{tibble} the object must contain the headers \code{Targets},
+#'    If supplied as a \code{data.frame} or \code{tibble} the object must contain the headers \code{Target},
 #'    and \code{lod} and with an optional \code{loq} header specifying the calibration curve target, the lod and loq
 #'    values respectively.
 #'
@@ -53,6 +53,19 @@
 calib_plot <- function(data, target, lod = NULL, robust = FALSE, ...){
 
   stopifnot(!missing(data) || !missing(target))
+
+  calib_df_name <- deparse(substitute(data))
+
+  # check columns names supplied correctly
+  if(!any(colnames(data) == "Target")) {
+    stop(paste0("can't find column `Target` in ", calib_df_name, "."))
+  }
+  if(!any(colnames(data) == "Cq")) {
+    stop(paste0("can't find column `Cq` in ", calib_df_name, "."))
+  }
+  if(!any(colnames(data) == "SQ")) {
+    stop(paste0("can't find column `SQ` in ", calib_df_name, "."))
+  }
 
   # flag data points with less than 50% detections for each standard
   DAT <- subset(data, data$Target %in% c(target))

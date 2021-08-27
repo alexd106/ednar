@@ -7,7 +7,7 @@
 calib_plot(data, target, lod = NULL, robust = FALSE, ...)
 }
 \arguments{
-\item{data}{A \code{\link{tibble}} or \code{\link{data.frame}} containing calibration curve data.}
+\item{data}{A \code{\link{tibble}} or \code{\link{data.frame}} containing calibration curve data (see \code{details}).}
 
 \item{target}{A character string containing a unique identifier for the target calibration curve to be plotted.}
 
@@ -22,7 +22,7 @@ detections. Default = \code{FALSE}.}
 A \code{\link{ggplot2}} object
 }
 \description{
-Create qPCR calibration plots.
+Create a qPCR calibration plot.
 }
 \details{
 The \code{data} object contains data for at least one qPCR calibration curve
@@ -34,10 +34,10 @@ The \code{data} object contains data for at least one qPCR calibration curve
    The \code{target} argument takes a single character string specifying the target calibration curve
    to plot.
 
-   The \code{lod} argument can be supplied as a vector or as a \code{data.frame} or \code{tibble}. If
+   The optional \code{lod} argument can be supplied as a vector or as a \code{data.frame} or \code{tibble}. If
    supplied as a vector then a single LOD value or optionally an LOD and LOQ value can be included. If both LOD
    and LOQ values are specified then LOD much be supplied first in the vector (i.e. \code{c(1.5, 4.1)}).
-   If supplied as a \code{data.frame} or \code{tibble} the object must contain the headers \code{Targets},
+   If supplied as a \code{data.frame} or \code{tibble} the object must contain the headers \code{Target},
    and \code{lod} and with an optional \code{loq} header specifying the calibration curve target, the lod and loq
    values respectively.
 
