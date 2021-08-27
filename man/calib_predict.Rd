@@ -38,7 +38,7 @@ The \code{calib_df} object contains data for at least one qPCR calibration curve
     Non-detections in either the \code{calib_df} or \code{ct_df} \code{data.frames} should be represented as \code{NA}.
 
     Copy number is predicted from Cq (Ct) values by fitting a linear model (\code{\link{lm}}) to data from each
-    calibration curve and then using the \code{\link{inverse.predict}} function from the \code{\link{chemCal-package}}
+    calibration curve and then using the \code{\link{inverse.predict}} function from the \code{chemCal} package.
     package.
 }
 \note{
